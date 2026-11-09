@@ -16,6 +16,7 @@
 \usepackage{graphicx}
 \usepackage{caption}
 \usepackage{subcaption}
+\usepackage{placeins}
 \usepackage[most]{tcolorbox}
 \usepackage{tikz}
 \usetikzlibrary{arrows.meta,decorations.markings,calc}
@@ -97,18 +98,20 @@ demonstraremos que todo feixe que chega paralelo ao eixo cruza o mesmo ponto, a
 uma distância $R/2$ do vértice, o que dá origem ao conceito de foco, e seguiremos
 rumo à equação de Gauss.
 
+\section*{Por que a imagem se forma no cruzamento dos feixes}
+
 Nesta seção vamos compreender e demonstrar o porquê de as fórmulas de óptica
 fazerem sentido e o que de fato os modelos teóricos dizem sobre a realidade.
 
-\medskip
-\noindent\textbf{1º)} O problema do estudo da óptica começa cedo: é normal que
+\subsection*{O problema}
+O problema do estudo da óptica começa cedo: é normal que
 alunos compreendam bem os princípios da luz, reflexões e espelhos planos, mas,
 ao estudar lentes e espelhos côncavos, se percam completamente, sem que consigam
 estabelecer uma conexão direta entre os fundamentos estudados e essa nova
 frente, parecendo até que algumas regras foram inventadas.
 
-\medskip
-\noindent\textbf{2º)} A primeira objeção surge logo no início, onde é jogado o
+\subsection*{A primeira objeção}
+A primeira objeção surge logo no início, onde é jogado o
 fato de que no cruzamento de raios luminosos uma imagem é formada. A lógica por
 trás, por incrível que pareça, é bem simples. Ninguém discorda ou duvida que o
 fenômeno da visão ocorre quando feixes de luz provenientes de um objeto,
@@ -140,8 +143,8 @@ estranhas: \enquote{o feixe que chega paralelo passa pelo foco}
   \label{fig:raios}
 \end{figure}
 
-\medskip
-\noindent\textbf{3º)} Veja bem, antes de discutirmos e mostrarmos o porquê,
+\subsection*{O que significa formar uma imagem}
+Veja bem, antes de discutirmos e mostrarmos o porquê,
 vamos entender o que significa formar uma imagem. O que acontece de fato é que a
 informação que a luz carrega, embora não seja perdida, é rearranjada por um
 aparato refletor. Instantaneamente, o rearranjo gerado impede que nós
@@ -198,27 +201,31 @@ fato de que a imagem se formará lá (Figura~\ref{fig:espelho-plano}).
 
 \begin{figure}[htbp]
   \centering
-  \input{figuras/fig3-imagem-real}
-  \caption{Os feixes que saem do ponto $A$ têm sua trajetória redefinida pelo
+  \begin{subfigure}{\textwidth}
+    \centering
+    \input{figuras/fig3-imagem-real}
+    \caption{}\label{fig:imagem-real}
+  \end{subfigure}
+
+  \bigskip
+  \begin{subfigure}{\textwidth}
+    \centering
+    \input{figuras/fig4-espelho-plano}
+    \caption{}\label{fig:espelho-plano}
+  \end{subfigure}
+  \caption{(a) Os feixes que saem do ponto $A$ têm sua trajetória redefinida pelo
     espelho côncavo e voltam a se encontrar em $A'$, onde assumem de novo a
     configuração de uma emissão pontual (as cores mostram que nenhuma informação
     se perde). Um anteparo colocado em $A'$ mostraria um ponto luminoso; sem o
     anteparo, os feixes seguem e chegam ao olho como se tivessem sido emitidos
-    em $A'$.}
-  \label{fig:imagem-real}
+    em $A'$. (b) Nem sempre é possível colocar um anteparo onde a imagem se
+    forma. No espelho plano, os feixes refletidos chegam ao olho como se saíssem
+    de $A'$, atrás do espelho (prolongamentos tracejados): a imagem se forma lá,
+    mas um anteparo em $A'$ não receberia luz alguma.}
+  \label{fig:formacao}
 \end{figure}
 
-\begin{figure}[htbp]
-  \centering
-  \input{figuras/fig4-espelho-plano}
-  \caption{Nem sempre é possível colocar um anteparo onde a imagem se forma. No
-    espelho plano, os feixes refletidos chegam ao olho como se saíssem de $A'$,
-    atrás do espelho (prolongamentos tracejados): a imagem se forma lá, mas um
-    anteparo em $A'$ não receberia luz alguma.}
-  \label{fig:espelho-plano}
-\end{figure}
-
-\clearpage
+\FloatBarrier
 \section*{Demonstrando certas propriedades e a equação de Gauss}
 
 \begin{itemize}[label=$\ast$,leftmargin=17pt,labelsep=6pt,topsep=4pt]
@@ -264,7 +271,8 @@ nós escolhermos feixes convenientes para equacionar
   \label{fig:demonstracao}
 \end{figure}
 
-\noindent\textbf{i)} Primeiro calcula-se onde o raio paralelo deve cruzar o eixo
+\subsection*{O foco}
+Primeiro calcula-se onde o raio paralelo deve cruzar o eixo
 das abscissas. Para isso, devemos equacionar a reta normal, para achar $\theta$;
 depois de fazermos isso, equacionamos o feixe $\delta$ e descobrimos o ponto de
 cruzamento.
@@ -426,6 +434,7 @@ distância focal (Figura~\ref{fig:foco}).
   \label{fig:foco}
 \end{figure}
 
+\subsection*{A equação de Gauss}
 Note que, como o procedimento tomado foi rigoroso analiticamente, foi possível
 mensurar de forma precisa o tamanho do erro das aproximações, assim garantindo a
 validade da expressão. Denota-se tal procedimento por \textbf{aproximação
