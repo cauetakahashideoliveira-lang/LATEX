@@ -9,7 +9,6 @@
 \usepackage[brazilian]{babel}
 \usepackage[hmargin=2.7cm,vmargin=2.5cm]{geometry}
 \usepackage{amsmath,amssymb,mathtools}
-\usepackage{cancel}
 \usepackage{microtype}
 \usepackage{csquotes}
 \usepackage{enumitem}
@@ -469,20 +468,25 @@ Assim:
   \end{dcases}
 \]
 Como $\delta \cap \gamma = \{I\}$,
-\begin{align}
-  &\Longrightarrow\ \cancel{y_{p'}} - \frac{\cancel{h}}{f}(2f - p') + \cancel{h}
-    = \cancel{y_{p'}} - \frac{\cancel{h}}{p}(2f - p') + \frac{2\cancel{h}f}{p}
-    \notag\\
-  &\Longrightarrow\ -\frac{2\cancel{f}}{\cancel{f}} + \frac{p'}{f} + 1
-    = \cancel{-\frac{2f}{p}} + \frac{p'}{p} + \cancel{\frac{2f}{p}} \notag\\
-  &\Longrightarrow\ -1 + \frac{p'}{f} = \frac{p'}{p} \notag\\
-  &\Longrightarrow\ \left(\frac{1}{p'}\right)\left[-1 + \frac{p'}{f}\right]
-    = \left(\frac{1}{p'}\right)\frac{p'}{p} \notag\\
-  &\Longrightarrow\ \frac{1}{f} - \frac{1}{p'} = \frac{1}{p}
-    \quad\Longrightarrow\quad
-    \underset{\text{equação de Gauss}}{\boxed{\frac{1}{f} = \frac{1}{p} + \frac{1}{p'}}}
-    \qquad \text{C.Q.D.} \label{eq:gauss}
-\end{align}
+\begin{alignat}{2}
+  & & y_{p'} - \frac{h}{f}(2f - p') + h
+    &= y_{p'} - \frac{h}{p}(2f - p') + \frac{2hf}{p} \notag\\
+  \Longrightarrow\quad & & -\frac{h}{f}(2f - p') + h
+    &= -\frac{h}{p}(2f - p') + \frac{2hf}{p} \notag\\
+  \Longrightarrow\quad & & -\frac{2f - p'}{f} + 1
+    &= -\frac{2f - p'}{p} + \frac{2f}{p} \notag\\
+  \Longrightarrow\quad & & -\frac{2f}{f} + \frac{p'}{f} + 1
+    &= -\frac{2f}{p} + \frac{p'}{p} + \frac{2f}{p} \notag\\
+  \Longrightarrow\quad & & -1 + \frac{p'}{f}
+    &= \frac{p'}{p} \notag\\
+  \Longrightarrow\quad & & \left(\frac{1}{p'}\right)\left[-1 + \frac{p'}{f}\right]
+    &= \left(\frac{1}{p'}\right)\frac{p'}{p} \notag\\
+  \Longrightarrow\quad & & \frac{1}{f} - \frac{1}{p'}
+    &= \frac{1}{p} \notag\\[2pt]
+  \Longrightarrow\quad & & \Aboxed{\frac{1}{f}
+    &= \frac{1}{p} + \frac{1}{p'}}
+    \qquad \text{(equação de Gauss)} \qquad \text{C.Q.D.} \label{eq:gauss}
+\end{alignat}
 
 \bigskip
 \begin{center}
