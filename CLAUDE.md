@@ -29,7 +29,15 @@
 
 ## Figuras
 - Matemáticas: TikZ/pgfplots incluídos com `\input{figuras/...}`, com a notação e as fontes do texto. Calcular e conferir pontos, rótulos e construção contra as equações. QA: skill `tikz-diagrams` (passar `--engine lualatex` ou o motor do projeto).
+- Superfícies e 3D: Asymptote (`asy`, `settings.render=0` para saída vetorial). Dados numéricos: matplotlib com backend `pgf` e `lualatex` (mesmas fontes). SVG: `pdftocairo -svg`.
 - Imagens externas: só com fonte original, autor e licença verificados. Registrar em `figuras/CREDITOS.md` (arquivo, URL de origem, autor, licença e URL da licença, alterações) e creditar na legenda. Busca: Openverse API (sem chave) e Wikimedia Commons (`extmetadata`); User-Agent `LATEX-writing-env/1.0 (https://github.com/cauetakahashideoliveira-lang/LATEX)`.
+
+## Contas e lógica
+- Contas de uma passagem (derivadas, integrais, somas, simplificações): conferir com SymPy (skill `sympy`) antes de dizer que estão certas ou erradas. Numérico: `mpmath`/`scipy`.
+- Desigualdades e afirmações universais simples: Z3 (`z3-solver`) prova ou devolve contraexemplo.
+- Demonstração delicada ou pedido de conferência: só o verificador adversarial da skill `math-olympiad` (contexto limpo, padrões de falha). Não resolver, não reescrever, não usar o passo de apresentação.
+- Dizer o que foi verificado e como; ferramenta confirma contas, não o raciocínio.
+- Lean 4 + Mathlib: não instalado (download do binário bloqueado pela permissão do modo automático).
 
 ## Referências
 - Skill `citation-management`: DOI → BibTeX (Crossref/doi.org); conferir com a fonte; proteger maiúsculas (`{Euler}`), matemática em `$...$`, páginas com `--`.

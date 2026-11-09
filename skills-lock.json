@@ -22,11 +22,25 @@
       "computedHash": "bd11bc8c6f4d9d669228aeb6bf40a3a627e081bf15e72ac41963c86d1a45fe49",
       "installMode": "copy"
     },
+    "math-olympiad": {
+      "source": "anthropics/claude-plugins-official",
+      "sourceType": "github",
+      "skillPath": "plugins/math-olympiad/skills/math-olympiad/SKILL.md",
+      "computedHash": "5c1683e1b33dfe1d493cf5c68aa8dd8e2a8b3bb9e2681bfa94c11d1f84966d25",
+      "installMode": "copy"
+    },
     "pdf2tex": {
       "source": "calix-l/awesome-latex-skills",
       "sourceType": "github",
       "skillPath": "pdf2tex/SKILL.md",
       "computedHash": "fd788277dc4fe6671bad3dab55490bd95837817ca2cd8ea3aca0171895894b4f",
+      "installMode": "copy"
+    },
+    "sympy": {
+      "source": "k-dense-ai/scientific-agent-skills",
+      "sourceType": "github",
+      "skillPath": "skills/sympy/SKILL.md",
+      "computedHash": "d9589facb7226c0ff7e357eb1ab9ceb7ea89f23b1a34c55f44f1773f4595c8f0",
       "installMode": "copy"
     },
     "tikz-diagrams": {
