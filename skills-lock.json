@@ -63,6 +63,13 @@
       "skillPath": ".claude/skills/wikimedia-commons/SKILL.md",
       "computedHash": "1f1b96901063df81e8f611cba5002266893a532c26c5e39d2e0f29afa480b03e",
       "installMode": "copy"
+    },
+    "writing-lean-proofs": {
+      "source": "trailofbits/skills",
+      "sourceType": "github",
+      "skillPath": "plugins/writing-lean-proofs/skills/writing-lean-proofs/SKILL.md",
+      "computedHash": "a5aeca21e368bb6b0a625ed22b15f7da1daf1fc4165ca83642252c6317ebfddf",
+      "installMode": "copy"
     }
   }
 }

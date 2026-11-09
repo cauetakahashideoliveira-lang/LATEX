@@ -11,3 +11,5 @@
 *.out
 *.toc
 teste-configuracao/
+.lake/
+verificacao-lean/

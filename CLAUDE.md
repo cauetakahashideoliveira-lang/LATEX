@@ -37,7 +37,7 @@
 - Desigualdades e afirmações universais simples: Z3 (`z3-solver`) prova ou devolve contraexemplo.
 - Demonstração delicada ou pedido de conferência: só o verificador adversarial da skill `math-olympiad` (contexto limpo, padrões de falha). Não resolver, não reescrever, não usar o passo de apresentação.
 - Dizer o que foi verificado e como; ferramenta confirma contas, não o raciocínio.
-- Lean 4 + Mathlib: não instalado (download do binário bloqueado pela permissão do modo automático).
+- Verificação formal (quando pedida ou para um lema crítico): Lean 4.35 + Mathlib em `verificacao-lean/` (skill `writing-lean-proofs`). Sessão nova: `bash verificacao-lean/instalar.sh`. Prova aceita só com `lake build` limpo e `#print axioms` restrito a `propext`, `Classical.choice`, `Quot.sound` (sem `sorryAx`). Mostrar ao autor o enunciado formalizado: o Lean garante esse enunciado, não a fidelidade da tradução.
 
 ## Referências
 - Skill `citation-management`: DOI → BibTeX (Crossref/doi.org); conferir com a fonte; proteger maiúsculas (`{Euler}`), matemática em `$...$`, páginas com `--`.

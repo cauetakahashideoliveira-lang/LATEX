@@ -24,3 +24,6 @@ __pycache__/
 
 # Asymptote: arquivos temporários
 *.pre
+
+# Lean: dependências e builds (recriados por verificacao-lean/instalar.sh)
+.lake/
