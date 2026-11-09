@@ -1,1 +1,2 @@
-import Verificacao.Teste
+module
+public import Verificacao.Teste
