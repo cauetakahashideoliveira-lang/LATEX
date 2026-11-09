@@ -17,6 +17,8 @@
 \usepackage{caption}
 \usepackage{subcaption}
 \usepackage{placeins}
+\usepackage{wrapfig}
+\usepackage{float}
 \usepackage[most]{tcolorbox}
 \usepackage{tikz}
 \usetikzlibrary{arrows.meta,decorations.markings,calc}
@@ -111,6 +113,16 @@ estabelecer uma conexão direta entre os fundamentos estudados e essa nova
 frente, parecendo até que algumas regras foram inventadas.
 
 \subsection*{A primeira objeção}
+\begin{wrapfigure}[11]{r}{0.25\textwidth}
+  \centering
+  \vspace{-10pt}
+  \begingroup\tikzset{every picture/.append style={scale=0.85}}%
+  \input{figuras/fig1a-ponto}\endgroup
+  \captionsetup{margin=0pt}
+  \caption{Cada ponto de um corpo emite infinitos feixes de luz, em todas as
+    direções.}
+  \label{fig:ponto}
+\end{wrapfigure}
 A primeira objeção surge logo no início, onde é jogado o
 fato de que no cruzamento de raios luminosos uma imagem é formada. A lógica por
 trás, por incrível que pareça, é bem simples. Ninguém discorda ou duvida que o
@@ -122,25 +134,20 @@ côncavos, utilizam-se apenas dois feixes, os quais ainda por cima seguem regras
 estranhas: \enquote{o feixe que chega paralelo passa pelo foco}
 (Figura~\ref{fig:dois-feixes}). Por quê?
 
-\begin{figure}[htbp]
+\begin{figure}[!ht]
   \centering
-  \begin{subfigure}[b]{0.3\textwidth}
-    \centering
-    \input{figuras/fig1a-ponto}
-    \caption{}\label{fig:ponto}
-  \end{subfigure}%
-  \hfill
-  \begin{subfigure}[b]{0.66\textwidth}
+  \begin{minipage}[c]{0.5\textwidth}
     \centering
     \input{figuras/fig1b-dois-feixes}
-    \caption{}\label{fig:dois-feixes}
-  \end{subfigure}
-  \caption{(a) Cada ponto de um corpo emite infinitos feixes de luz, em todas as
-    direções. (b) No estudo dos espelhos côncavos, porém, costumam-se usar apenas
-    dois feixes, com regras como \enquote{o feixe que chega paralelo passa pelo
-    foco} (1) e \enquote{o feixe que passa pelo foco sai paralelo} (2).
-    $C$: centro de curvatura; $F$: foco; $V$: vértice.}
-  \label{fig:raios}
+  \end{minipage}\hfill
+  \begin{minipage}[c]{0.46\textwidth}
+    \captionsetup{margin=0pt}
+    \caption{No estudo dos espelhos côncavos, porém, costumam-se usar apenas
+      dois feixes, com regras como \enquote{o feixe que chega paralelo passa pelo
+      foco} (1) e \enquote{o feixe que passa pelo foco sai paralelo} (2).
+      $C$: centro de curvatura; $F$: foco; $V$: vértice.}
+    \label{fig:dois-feixes}
+  \end{minipage}
 \end{figure}
 
 \subsection*{O que significa formar uma imagem}
@@ -157,24 +164,7 @@ Analogamente, cada feixe de luz carrega uma informação única e, ao
 interpretarmos esse conjunto de dados na ordem imposta pela emissão do objeto,
 interpretamos ele (Figura~\ref{fig:feixes-ordem}).
 
-A ideia de formar uma imagem surge fundamentalmente desse conceito; veja como
-tudo se encaixa: a luz sai de um objeto, a luz reflete em um espelho côncavo e
-cada feixe de luz tem sua trajetória redefinida. Se eles saírem de um ponto, por
-exemplo, essa emissão pontual ordenada configura nossa interpretação do objeto e
-nossa distância dele. É óbvio que, caso a luz que foi espalhada seja
-reconfigurada novamente de forma que todos os feixes luminosos saiam na mesma
-configuração de emissão inicial, nesse caso um ponto, voltaríamos a interpretar
-aquele conjunto de informação da mesma maneira que o objeto. Por isso, dizer que
-a imagem se forma no encontro de feixes luminosos não significa que magicamente
-naquele ponto se formará um holograma do objeto, e sim que, ao se cruzarem,
-assumem a mesma configuração da informação emitida pelo corpo inicialmente e,
-portanto, caso um anteparo seja colocado lá, a projeção vista seria interpretada
-da mesma maneira que interpretamos o objeto (Figura~\ref{fig:imagem-real}).
-Denominamos esse fenômeno de formação de imagem. Note que nem sempre será
-possível colocar um anteparo no local em que a imagem se forma, e isso não muda o
-fato de que a imagem se formará lá (Figura~\ref{fig:espelho-plano}).
-
-\begin{figure}[htbp]
+\begin{figure}[!ht]
   \centering
   \begin{subfigure}{\textwidth}
     \centering
@@ -199,7 +189,24 @@ fato de que a imagem se formará lá (Figura~\ref{fig:espelho-plano}).
   \label{fig:analogia}
 \end{figure}
 
-\begin{figure}[htbp]
+A ideia de formar uma imagem surge fundamentalmente desse conceito; veja como
+tudo se encaixa: a luz sai de um objeto, a luz reflete em um espelho côncavo e
+cada feixe de luz tem sua trajetória redefinida. Se eles saírem de um ponto, por
+exemplo, essa emissão pontual ordenada configura nossa interpretação do objeto e
+nossa distância dele. É óbvio que, caso a luz que foi espalhada seja
+reconfigurada novamente de forma que todos os feixes luminosos saiam na mesma
+configuração de emissão inicial, nesse caso um ponto, voltaríamos a interpretar
+aquele conjunto de informação da mesma maneira que o objeto. Por isso, dizer que
+a imagem se forma no encontro de feixes luminosos não significa que magicamente
+naquele ponto se formará um holograma do objeto, e sim que, ao se cruzarem,
+assumem a mesma configuração da informação emitida pelo corpo inicialmente e,
+portanto, caso um anteparo seja colocado lá, a projeção vista seria interpretada
+da mesma maneira que interpretamos o objeto (Figura~\ref{fig:imagem-real}).
+Denominamos esse fenômeno de formação de imagem. Note que nem sempre será
+possível colocar um anteparo no local em que a imagem se forma, e isso não muda o
+fato de que a imagem se formará lá (Figura~\ref{fig:espelho-plano}).
+
+\begin{figure}[!ht]
   \centering
   \begin{subfigure}{\textwidth}
     \centering
@@ -237,15 +244,21 @@ fato de que a imagem se formará lá (Figura~\ref{fig:espelho-plano}).
     altura $h$ do eixo, tem $h \le H \ll R$ (Figura~\ref{fig:abertura}).
 \end{itemize}
 
-\begin{figure}[htbp]
+\begin{figure}[H]
   \centering
-  \input{figuras/fig5-abertura}
-  \caption{Abertura de um espelho côncavo real, desenhada em escala. Com
+  \begin{minipage}[c]{0.58\textwidth}
+    \centering
+    \input{figuras/fig5-abertura}
+  \end{minipage}\hfill
+  \begin{minipage}[c]{0.38\textwidth}
+    \captionsetup{margin=0pt}
+    \caption{Abertura de um espelho côncavo real, desenhada em escala. Com
     abertura total $\varphi \le 10^\circ$ (ou seja, $\theta = \varphi/2 \le 5^\circ$
     do vértice até o topo), a altura $H$ do vértice até o topo do espelho não
     passa de cerca de 9\% do raio $R$, e o espelho é quase plano perto do
     vértice.}
-  \label{fig:abertura}
+    \label{fig:abertura}
+  \end{minipage}
 \end{figure}
 
 Queremos resolver o seguinte problema: dadas as dimensões de um espelho côncavo
@@ -258,7 +271,7 @@ ponto em que eles se cruzarem todos os feixes deverão se cruzar. Assim, cabe a
 nós escolhermos feixes convenientes para equacionar
 (Figura~\ref{fig:demonstracao}).
 
-\begin{figure}[htbp]
+\begin{figure}[!ht]
   \centering
   \input{figuras/fig6-demonstracao}
   \caption{Redesenho da figura da demonstração (dimensões exageradas). O centro
@@ -423,15 +436,22 @@ eixo em $x_0 = R/2$, damos um nome para esse ponto, por ele ser tão importante:
 chamamos de \textbf{foco} ($F$), e a distância $f = R/2$ do foco ao vértice, de
 distância focal (Figura~\ref{fig:foco}).
 
-\begin{figure}[htbp]
+\begin{figure}[H]
   \centering
-  \input{figuras/fig7-foco}
-  \caption{Feixes que chegam paralelos ao eixo, em alturas diferentes, são
+  \begin{minipage}[c]{0.48\textwidth}
+    \centering
+    \begingroup\tikzset{every picture/.append style={scale=0.88}}%
+    \input{figuras/fig7-foco}\endgroup
+  \end{minipage}\hfill
+  \begin{minipage}[c]{0.48\textwidth}
+    \captionsetup{margin=0pt}
+    \caption{Feixes que chegam paralelos ao eixo, em alturas diferentes, são
     refletidos pelo espelho e cruzam o eixo no mesmo ponto, a $R/2$ do centro e
     do vértice: esse ponto é o foco $F$. (Os feixes mais afastados do eixo cruzam
     um pouco antes, porque para eles $h \ll R$ vale menos; por isso os espelhos
     reais têm abertura pequena.)}
-  \label{fig:foco}
+    \label{fig:foco}
+  \end{minipage}
 \end{figure}
 
 \subsection*{A equação de Gauss}
@@ -441,7 +461,7 @@ validade da expressão. Denota-se tal procedimento por \textbf{aproximação
 paraxial}. Utilizando, portanto, tal resultado, equacionemos os feixes refletidos
 (Figura~\ref{fig:gauss}).
 
-\begin{figure}[htbp]
+\begin{figure}[H]
   \centering
   \input{figuras/fig8-gauss}
   \caption{Os feixes refletidos $\delta$ e $\gamma$, que saem do ponto $O$ do
