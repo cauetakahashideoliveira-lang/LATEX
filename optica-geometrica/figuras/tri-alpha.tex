@@ -1,0 +1,9 @@
+% Triângulo O V X_O (para tg alpha), esquemático.
+\begin{tikzpicture}[font=\small,baseline=(b)]
+  \coordinate (b) at (0,0.35);
+  \draw[line width=0.6pt] (0,0) -- (2.4,0) -- (0,0.85) -- cycle;
+  \draw[line width=0.4pt] (0.16,0) -- ++(0,0.16) -- ++(-0.16,0);
+  \draw[line width=0.4pt,azul] (1.7,0) arc[start angle=180,end angle={180-atan(0.85/2.4)},radius=0.7];
+  \node[inner sep=0pt,anchor=base east,text=azul] at (1.6,0.06) {$\alpha$};
+  \node[anchor=north,inner sep=2pt] at (1.2,0) {$p$};
+\end{tikzpicture}

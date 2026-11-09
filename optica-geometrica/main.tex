@@ -9,6 +9,7 @@
 \usepackage[brazilian]{babel}
 \usepackage[hmargin=2.7cm,vmargin=2.5cm]{geometry}
 \usepackage{amsmath,amssymb,mathtools}
+\usepackage{cancel}
 \usepackage{microtype}
 \usepackage{csquotes}
 \usepackage{enumitem}
@@ -223,16 +224,20 @@ fato de que a imagem se formará lá (Figura~\ref{fig:espelho-plano}).
 
 \begin{itemize}[label=$\ast$,leftmargin=17pt,labelsep=6pt,topsep=4pt]
   \item Na vida real, um espelho côncavo possui grau de abertura, no geral,
-    menor ou igual a $10^\circ$; logo, a altura do vértice do espelho até seu
-    topo é muito menor que o raio (Figura~\ref{fig:abertura}).
+    menor ou igual a $10^\circ$. Como essa é a abertura total, do vértice até o
+    topo do espelho o ângulo é só a metade, $\theta \le 5^\circ$; logo, a altura do
+    vértice do espelho até seu topo, $H = R\sin\theta \le R\sin 5^\circ \approx
+    0{,}09\,R$, é muito menor que o raio, e qualquer ponto do espelho, a uma
+    altura $h$ do eixo, tem $h \le H \ll R$ (Figura~\ref{fig:abertura}).
 \end{itemize}
 
 \begin{figure}[htbp]
   \centering
   \input{figuras/fig5-abertura}
   \caption{Abertura de um espelho côncavo real, desenhada em escala. Com
-    $\varphi \le 10^\circ$, a altura $H$ do vértice até o topo do espelho não
-    passa de cerca de 17\% do raio $R$, e o espelho é quase plano perto do
+    abertura total $\varphi \le 10^\circ$ (ou seja, $\theta = \varphi/2 \le 5^\circ$
+    do vértice até o topo), a altura $H$ do vértice até o topo do espelho não
+    passa de cerca de 9\% do raio $R$, e o espelho é quase plano perto do
     vértice.}
   \label{fig:abertura}
 \end{figure}
@@ -301,6 +306,16 @@ Como $h \ll R \Rightarrow \dfrac{R}{h} \gg 1$, logo
   m \approx \frac{1}{\sqrt{\dfrac{R^2}{h^2}}} = \frac{h}{R}
   \qquad\Longrightarrow\qquad \tg\theta \approx \frac{h}{R}.
 \end{equation}
+Essa aproximação é muito boa. Considerando um espelho médio, de $8^\circ$ de
+abertura, temos $H = R\sin 4^\circ$, e $\sin 4^\circ \approx 0{,}07$; elevando ao
+quadrado,
+\[
+  \frac{R^2}{H^2} \approx \frac{1}{(0{,}07)^2} \approx 204,
+\]
+um valor acima de 200 (e, como $h \le H$, $R^2/h^2$ é maior ainda). Perto de 200,
+o $1$ se torna realmente muito pequeno, menos de 0,5\%, e não faz diferença
+nenhuma. Principalmente porque depois ainda passamos uma raiz: sair de
+$\sqrt{204}$ para $\sqrt{203}$ é um erro ainda menor, de cerca de 0,25\%.
 
 \begin{comentario}
   \titulocaixa{Explicando as passagens}
@@ -401,6 +416,73 @@ distância focal (Figura~\ref{fig:foco}).
     reais têm abertura pequena.)}
   \label{fig:foco}
 \end{figure}
+
+Note que, como o procedimento tomado foi rigoroso analiticamente, foi possível
+mensurar de forma precisa o tamanho do erro das aproximações, assim garantindo a
+validade da expressão. Denota-se tal procedimento por \textbf{aproximação
+paraxial}. Utilizando, portanto, tal resultado, equacionemos os feixes refletidos
+(Figura~\ref{fig:gauss}).
+
+\begin{figure}[htbp]
+  \centering
+  \input{figuras/fig8-gauss}
+  \caption{Os feixes refletidos $\delta$ e $\gamma$, que saem do ponto $O$ do
+    objeto, se cruzam no ponto $I$ da imagem (dimensões exageradas).}
+  \label{fig:gauss}
+\end{figure}
+
+\noindent
+\begin{minipage}[t]{0.49\textwidth}
+  Para $\tg 2\theta$, considere $\triangle PVF$, com $\overline{FV} \approx f$:
+  \[
+    \input{figuras/tri-2theta}\qquad
+    \tg 2\theta = m_\delta \approx \frac{h}{f}
+  \]
+\end{minipage}\hfill
+\begin{minipage}[t]{0.47\textwidth}
+  Para $\tg\alpha$, $\triangle OVX_O$:
+  \[
+    \input{figuras/tri-alpha}\qquad
+    \tg\alpha = m_\gamma = \frac{h}{p}
+  \]
+\end{minipage}
+
+\medskip
+Logo:
+\[
+  \begin{dcases}
+    \text{1º)}\ \ \delta\colon\ y - \frac{h}{f}\,x - b_\delta = 0; &
+      \text{1.1)}\ P = (x_P,\ h) \in \delta,\ x_P \approx 2f\\[2pt]
+    \text{2º)}\ \ \gamma\colon\ y - \frac{h}{p}\,x - b_\gamma = 0; &
+      \text{2.1)}\ V = (2f,\ 0) \in \gamma.
+  \end{dcases}
+\]
+\begin{align*}
+  \text{1.1)} &\Longrightarrow\ b_\delta = h - \frac{h}{f}\cdot 2f = -h\\
+  \text{2.1)} &\Longrightarrow\ b_\gamma = 0 - \frac{h}{p}\cdot 2f = -\frac{2hf}{p}
+\end{align*}
+Assim:
+\[
+  \begin{dcases}
+    \delta\colon\ y - \frac{h}{f}\,x + h = 0\\
+    \gamma\colon\ y - \frac{h}{p}\,x + \frac{2hf}{p} = 0
+  \end{dcases}
+\]
+Como $\delta \cap \gamma = \{I\}$,
+\begin{align}
+  &\Longrightarrow\ \cancel{y_{p'}} - \frac{\cancel{h}}{f}(2f - p') + \cancel{h}
+    = \cancel{y_{p'}} - \frac{\cancel{h}}{p}(2f - p') + \frac{2\cancel{h}f}{p}
+    \notag\\
+  &\Longrightarrow\ -\frac{2\cancel{f}}{\cancel{f}} + \frac{p'}{f} + 1
+    = \cancel{-\frac{2f}{p}} + \frac{p'}{p} + \cancel{\frac{2f}{p}} \notag\\
+  &\Longrightarrow\ -1 + \frac{p'}{f} = \frac{p'}{p} \notag\\
+  &\Longrightarrow\ \left(\frac{1}{p'}\right)\left[-1 + \frac{p'}{f}\right]
+    = \left(\frac{1}{p'}\right)\frac{p'}{p} \notag\\
+  &\Longrightarrow\ \frac{1}{f} - \frac{1}{p'} = \frac{1}{p}
+    \quad\Longrightarrow\quad
+    \underset{\text{equação de Gauss}}{\boxed{\frac{1}{f} = \frac{1}{p} + \frac{1}{p'}}}
+    \qquad \text{C.Q.D.} \label{eq:gauss}
+\end{align}
 
 \bigskip
 \begin{center}

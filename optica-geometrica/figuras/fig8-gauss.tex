@@ -1,0 +1,56 @@
+% Figura 8: construção para a equação de Gauss (dimensões exageradas).
+% C na origem; R = 2f = 7; O = (R - p, h) com p = 5,6 e h = 1,3.
+% delta: chega paralelo, reflete em P e passa por F; gamma: reflete em V com o
+% mesmo ângulo alpha (passa por (R - p, -h)). I = delta \cap gamma.
+\begin{tikzpicture}[font=\small]
+  \def\R{7}
+  \def\h{1.3}
+  \def\p{5.6}
+  \pgfmathsetmacro{\xP}{sqrt(\R*\R-\h*\h)}
+  \pgfmathsetmacro{\al}{atan(\h/\p)}
+  \coordinate (O) at ({\R-\p},\h);
+  \coordinate (XO) at ({\R-\p},0);
+  \coordinate (Ol) at ({\R-\p},-\h);
+  \coordinate (P) at (\xP,\h);
+  \coordinate (F) at ({\R/2},0);
+  \coordinate (V) at (\R,0);
+  \coordinate (I) at (intersection of P--F and V--Ol);
+  % eixos
+  \draw[line width=0.5pt,-{Stealth[length=4pt,width=3pt]}] (-2.6,0) -- (8.4,0);
+  \draw[line width=0.5pt,-{Stealth[length=4pt,width=3pt]}] (0,-2.75) -- (0,2.45);
+  \node[inner sep=0pt,anchor=base west] at (8.1,-0.29) {$x$};
+  \node[inner sep=0pt,anchor=base west] at (-0.32,2.2) {$y$};
+  % espelho
+  \draw[espelho] (-16:\R) arc[start angle=-16,end angle=16,radius=\R];
+  \foreach \a in {-15,-13,...,15}
+    \draw[hachura] (\a:\R) -- ++(\a-40:0.2);
+  % O e sua projeção X_O; cota p'
+  \draw[line width=0.5pt,dashed] (O) -- (XO);
+  \draw[guia] (I) -- ++(0,-0.62);
+  \draw[guia] (V) -- ++(0,-2.67);
+  \draw[cota] ($(I)+(0,-0.5)$) -- ($(V|-I)+(0,-0.5)$)
+    node[midway,fill=white,inner sep=1.5pt] {$p'$};
+  % feixe delta: chega paralelo, reflete em P e passa pelo foco
+  \draw[raio,vermelho] (O) -- (P);
+  \draw[raio,vermelho] (P) -- (F);
+  \draw[raio,vermelho] (F) -- (I);
+  \node[inner sep=0pt,anchor=base west,text=vermelho] at (4.0,1.43) {$\delta$};
+  % feixe O -> V e seu reflexo gamma
+  \draw[raio,azul] (O) -- (V);
+  \draw[raio,azul] (V) -- (I);
+  \node[inner sep=0pt,anchor=base west,text=azul] at (4.95,-0.86) {$\gamma$};
+  % ângulos
+  \draw[line width=0.4pt] ($(F)+(0.9,0)$) arc[start angle=0,end angle={atan(\h/(\xP-\R/2))},radius=0.9];
+  \node[inner sep=0pt,anchor=base west] at ($(F)+(1.02,0.07)$) {$2\theta$};
+  \draw[line width=0.4pt,azul] ($(V)+(180-\al:1.1)$) arc[start angle=180-\al,end angle=180,radius=1.1];
+  \node[inner sep=0pt,anchor=base west,text=azul] at ($(V)+(-1.48,0.07)$) {$\alpha$};
+  % pontos e rótulos
+  \fill (O) circle (0.07) (XO) circle (0.055) (P) circle (0.07) (F) circle (0.055)
+    (V) circle (0.07) (I) circle (0.07);
+  \node[inner sep=0pt,anchor=base west] at (0.5,1.52) {$O\,(R-p,\ h)$};
+  \node[inner sep=0pt,anchor=base west] at (7.12,1.4) {$P$};
+  \node[anchor=north,inner sep=2pt] at (XO) {$X_O$};
+  \node[anchor=north west,inner sep=0pt] at ($(F)+(0.04,-0.1)$) {$F$};
+  \node[inner sep=0pt,anchor=base west] at (6.68,-0.44) {$V$};
+  \node[anchor=east,inner sep=3pt] at (I) {$I\,(2f-p',\ y_{p'})$};
+\end{tikzpicture}
