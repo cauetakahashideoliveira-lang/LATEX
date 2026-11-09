@@ -370,6 +370,16 @@ Dividindo por $R$:
   \frac{x_0}{R} = \sqrt{1 - \frac{h^2}{R^2}} - \frac{1}{2}
   + \frac{1}{2}\left(\frac{h}{R}\right)^{2}, \qquad \text{com}\ \frac{h}{R} \to 0.
 \end{equation}
+Aqui, $(h/R)^2$ também vai para zero. Com a mesma estimativa de antes (espelho
+de $8^\circ$, $H/R = \sin 4^\circ \approx 0{,}07$),
+\[
+  \left(\frac{h}{R}\right)^2 \le \left(\frac{H}{R}\right)^2 \approx (0{,}07)^2
+  \approx 0{,}005
+  \qquad\Longrightarrow\qquad
+  \frac{1}{2}\left(\frac{h}{R}\right)^2 \approx 0{,}0025,
+\]
+um valor bem pequeno (e, pelo mesmo motivo, $\sqrt{1 - h^2/R^2} \approx
+\sqrt{0{,}995} \approx 1$). Podemos, portanto, desprezar essa parcela.
 Logo,
 \begin{equation}\label{eq:foco}
   \frac{x_0}{R} = 1 - \frac{1}{2} = \frac{1}{2}
