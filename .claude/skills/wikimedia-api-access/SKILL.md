@@ -1,0 +1,761 @@
+---
+name: wikimedia-api-access
+description: Access Wikipedia and Wikimedia APIs (REST, Action API, SPARQL) with correct User-Agent headers, rate limiting, and 429/403 error handling
+license: MIT
+compatibility: opencode
+skill_discovery_hints:
+  - keywords: ["Wikipedia API", "Action API", "REST API", "API endpoint", "api.php", "rest_v1", "User-Agent", "rate limit", "API call", "ratelimits"]
+  - keywords: ["Site Matrix", "sitematrix", "domain mapping", "language code", "language domain", "yue wikipedia", "zh-yue", "interlanguage"]
+  - keywords: ["page summary", "page extract", "extintro", "exintro", "page content", "fetch article", "get page"]
+  - keywords: ["CORS preflight", "NetworkError", "Load failed", "browser fetch", "Firefox", "Safari", "WebKit", "forbidden header", "OPTIONS 405", "Api-User-Agent"]
+last_verified: 2026-10-04
+---
+
+All requests to Wikimedia APIs **must** include a descriptive `User-Agent` header or they will be blocked (HTTP 403 or 429). This is enforced by the [Wikimedia Foundation User-Agent Policy](https://foundation.wikimedia.org/wiki/Policy:Wikimedia_Foundation_User-Agent_Policy).
+
+> **💡 Pi users:** If you use the [pi coding agent](https://github.com/earendil-works/pi), install the companion extension from this repo to **automatically inject the User-Agent header** on every `curl`, `wget`, `python`, and `node` command that targets a Wikimedia server — no manual intervention needed. See the [README](../../../README.md#pi-agent-setup) for setup instructions.
+
+> 💡 **Not sure which tool to use?** See **[wikimedia-api-strategy](../wikimedia-api-strategy/SKILL.md)** for a decision framework comparing REST API, Action API, SPARQL, SQL replicas, EventStreams, and Pywikibot — with latency/complexity/authentication trade-offs and common anti-patterns.
+
+## **User-Agent Format**
+
+The generic format is:
+
+```
+<client name>/<version> (<contact information>) <project identifier>/<version>
+```
+
+Parts that are not applicable can be omitted. The contact information should be an email address, website URL, or wiki user page.
+
+### **Required Pattern**
+
+```python
+headers = {
+    'User-Agent': 'YourBot/1.0 (https://your-site.com; your@email.com) ProjectName'
+}
+```
+
+The `ProjectName` (e.g. `ContentGapResearch`) helps Wikimedia distinguish traffic from different tools.
+
+### **Concrete Example**
+
+```python
+import requests
+
+headers = {
+    'User-Agent': 'my-wiki-bot/1.0 (https://example.com; user@example.com) ContentGapResearch'
+}
+
+response = requests.get('https://en.wikipedia.org/w/api.php', headers=headers, timeout=30)
+```
+
+## **Why This Matters**
+
+- Requests without a `User-Agent` or with generic agents (`python-requests/x`, `curl`, `Python-urllib`) are blocked with HTTP **403** or **429** errors.
+- A descriptive UA allows Wikimedia to contact you if your bot misbehaves.
+- Always include "bot" in the UA string (case-insensitive) for automated agents — this helps Wikimedia classify traffic correctly and provide accurate statistics.
+- **Never** copy a browser's UA string for bot requests — bot-like behavior with a browser UA will be treated as malicious.
+
+## **Key API Endpoints**
+
+| API | Base URL | Common Use |
+|-----|----------|------------|
+| Action API | `https://en.wikipedia.org/w/api.php` | Search, page content, edits, categories |
+| REST API | `https://en.wikipedia.org/api/rest_v1/` | Page summaries, mobile content, transforms |
+| Pageviews | `https://wikimedia.org/api/rest_v1/metrics/pageviews/` | Traffic statistics |
+| Commons Analytics | `https://wikimedia.org/api/rest_v1/metrics/commons-analytics/` | GLAM category/file usage stats (monthly, pre-compiled) |
+| Lift Wing ML | `https://api.wikimedia.org/service/lw/inference/v1/models/` | ML predictions (revert risk, article quality, topics) |
+| Site Matrix | `https://en.wikipedia.org/w/api.php?action=sitematrix` | Get correct domains for all Wikimedia wikis (handles code/domain mismatches like `yue`→`zh-yue`) |
+| Wikidata Query (SPARQL) | `https://query.wikidata.org/sparql` | Structured data queries |
+| Toolforge | `https://*.toolforge.org/` | Community tool hosting |
+
+> 💡 **These APIs are project-agnostic.** The Action API and REST API shown above with `en.wikipedia.org` are MediaWiki APIs that work on **any** Wikimedia project — just swap the domain. For example:
+> - **Commons:** `https://commons.wikimedia.org/w/api.php` — search media files, fetch EXIF metadata, inspect categories
+> - **Wikidata:** `https://www.wikidata.org/w/api.php` — query entities, manage labels and descriptions, fetch claims
+> - **Wiktionary:** `https://en.wiktionary.org/w/api.php` — dictionary data, word definitions, etymology
+> - **Meta-Wiki:** `https://meta.wikimedia.org/w/api.php` — global user info, cross-wiki settings, Wikimedia Foundation policies
+>
+> The query parameters and response structures are the same; only the domain and the wiki's content differ.
+
+## **General Implementation Pattern**
+
+```python
+import requests
+import time
+
+SESSION = requests.Session()
+SESSION.headers.update({
+    'User-Agent': 'my-wiki-bot/1.0 (https://example.com; user@example.com) ContentGapResearch'
+})
+
+def wikimedia_request(url, params=None, max_retries=3):
+    for attempt in range(max_retries):
+        resp = SESSION.get(url, params=params, timeout=30)
+        if resp.status_code == 200:
+            return resp.json()
+        if resp.status_code == 429:
+            retry_after = int(resp.headers.get('Retry-After', 10))
+            time.sleep(retry_after)
+            continue
+        if resp.status_code == 403:
+            raise PermissionError(
+                "403 Forbidden — likely a missing or invalid User-Agent. "
+                "See: https://foundation.wikimedia.org/wiki/Policy:Wikimedia_Foundation_User-Agent_Policy"
+            )
+        resp.raise_for_status()
+    raise Exception(f"Request failed after {max_retries} retries")
+
+# Typical response structure (Action API query):
+# {
+#   "batchcomplete": "",
+#   "query": {
+#     "pages": {
+#       "12345": {                                # ← page ID as string key
+#         "pageid": 12345,
+#         "ns": 0,
+#         "title": "Albert Einstein",
+#         ...other requested properties...
+#       }
+#     }
+#   },
+#   "continue": {"continue": "-||", ...}        # ← pagination cursor (if more results)
+# }
+# Access: data["query"]["pages"]["12345"]["title"]
+# Iterate: for page_id, page_data in data["query"]["pages"].items():
+```
+
+### **Browser-Based JavaScript**
+
+Browser JavaScript cannot control the `User-Agent` header (the browser sets it). Instead, use the `Api-User-Agent` header:
+
+```javascript
+fetch('https://en.wikipedia.org/w/api.php?action=query&format=json', {
+    headers: new Headers({
+        'Api-User-Agent': 'MyScript/1.0'
+    })
+})
+```
+
+## **Rate Limiting & Error Handling Guardrails**
+
+1. **Connection reuse** — Always use a `requests.Session()` (or equivalent) to reuse connections. Do not create a new connection per request.
+2. **Retry-After** — On 429, respect the `Retry-After` header value. Never retry immediately.
+3. **Pacing & Batching** — Pacing depends on where you run (see the tier table
+   below): outside Toolforge/WMCS, pace unauthenticated batch work at ≥1s
+   between requests (~60/min, safely under the 200/min UA-only gateway class);
+   inside Toolforge/WMCS you are exempt from rate limiting and no fixed delay
+   is required — keep concurrency modest and honor 429s instead. For the
+   Action API, respect the `maxlag` parameter. **Always use the largest batch
+   size the API supports** (e.g., `rvlimit=500`, `uclimit=500`) rather than
+   fetching items one at a time. See the **SOP: Batching and Pagination for
+   Efficiency** in the [`wikipedia-edit-history`](../wikipedia-edit-history/SKILL.md)
+   skill for detailed patterns.
+4. **403 handling** — A 403 almost always means a bad/missing UA. Check the UA string before debugging anything else.
+5. **User-Agent per project** — Parameterize the contact info so users can swap in their own details. Never hardcode someone else's email.
+6. **SPARQL queries** — For Wikidata Query Service, always set the UA and use `&format=json`. Consider using `SPARQLWrapper` with the `agent` parameter.
+
+**⚠️ `maxlag` is not the same signal on every wiki (verified 2026-10-09).** On Wikipedia and Commons it reflects
+edit-cluster load. On **`wikidata.org` it blocks on WDQS replication lag**, so a bulk job passing `maxlag=5` there is
+refused whenever the query service falls behind — an event with nothing to do with editing load — and an immediate
+retry loop then amplifies the backlog it is reacting to. Scope `maxlag` to the wiki you are actually *writing* to,
+and treat a `maxlag` error on wikidata.org as "come back later" rather than "back off and retry".
+
+### 429 Retry-After Handling
+
+When a 429 (Too Many Requests) response is received, Wikimedia includes a
+`Retry-After` header specifying the number of seconds to wait. **Do not retry
+immediately with a fixed backoff** (e.g., always waiting exactly 5 seconds)
+— this is counterproductive and may lead to a temporary ban. Always use the
+server-supplied value:
+
+```python
+if resp.status_code == 429:
+    retry_after = int(resp.headers.get('Retry-After', 10))
+    time.sleep(retry_after)
+    continue  # retry the request in a loop
+```
+
+### 2026 Gateway Rate-Limit Classes (what 429 actually means now)
+
+Since 2026 Wikimedia enforces **gateway-level per-client rate limits** on the
+Action and REST APIs, in addition to MediaWiki's per-wiki action limits. The
+client class is derived from identity: session cookies (bot passwords,
+OAuth with cookies) → authenticated; a compliant User-Agent alone →
+UA-only; nothing → unidentified (per IP).
+
+| Client class | Limit |
+|---|---|
+| Unidentified (IP only) | 10 req/min |
+| Compliant User-Agent only | 200 req/min |
+| Authenticated (logged-in session) | 2000 req/min |
+| Bot flag on any wiki / WMCS / stewards | exempt |
+
+Practical consequences (verified 2026-08-10):
+
+- **Authenticate with a bot password (cookies) to get the 2000/min class** —
+  pywikibot, UploadWizard, and any cookie-holding client qualify automatically.
+- **A 429 while authenticated at a modest rate is almost never your account**:
+  check `action=query&meta=userinfo&uiprop=ratelimits` — `hits/max/window`
+  show the classic per-action limits and are `None` when nothing applies.
+- The gateway's 429 body is a MediaWiki-style JSON envelope
+  (`{"error":{"code":"http-bad-status","info":"There was a problem during
+  the HTTP request: 429 Too Many Requests",...}}`) — see the
+  [wikipedia-error-handling](../wikipedia-error-handling/SKILL.md) skill for
+  the three distinct 429 flavors and how to tell them apart.
+- Retry-After may be absent; the docs recommend exponential backoff (min 5s)
+  when it is. For per-IP CDN blocks (e.g. live.staticflickr.com) the window
+  can be ~60 min — see the [flickr](../flickr/SKILL.md) skill.
+
+#### Sustained rate, not burst size (verified 2026-10-04)
+
+The class table above is a **per-minute budget**, so the number that matters is
+your achieved requests-per-minute — not how large an instantaneous burst looks:
+
+| Pattern | Achieved rate | UA-only class (200/min) |
+|---|---|---|
+| Sequential, ≥1s between requests | ≤60/min | fine |
+| 4 parallel requests, next wave 1s later | ~240/min | **over budget** |
+| 10 parallel requests per wave | ~600/min | well over |
+
+Two traps this creates:
+
+- **A short burst proves nothing.** Six requests fired back-to-back return
+  `200`s with no `Retry-After` and no `x-ratelimit-*` header, because the budget
+  is minute-scale. A burst probe cannot tell you whether a sustained run will be
+  throttled — measure req/min across the whole run instead.
+- **A missing `Retry-After` does not mean "no limit applies".** Back off on the
+  status code (exponential, min 5s), not on the presence of the header.
+
+The class also depends on **where you run**: the same code is exempt inside
+Toolforge/WMCS but a UA-only client on a laptop, so a local loop (e.g. re-running
+an evaluation corpus across thousands of pages) can hit a ceiling the deployed
+service never sees. When that happens the fix is usually the cache — see
+*Cache the entity, not the batch* below.
+
+### Authoritative sources & per-surface guidance
+
+The two governing documents, both current as of 2026-09:
+
+- **[Wikitech Robot policy](https://wikitech.wikimedia.org/wiki/Robot_policy)** —
+  per-surface etiquette *guidance*: website reads <10 concurrent & <20 req/s
+  average; REST API unauth 3 concurrent / <5 req/s (auth: 10 req/s); Action
+  API unauth 1 concurrent / <5 req/s (auth: 3 concurrent / 10 req/s);
+  `upload.wikimedia.org` ≤2 concurrent / ≤25 Mbps; other resources
+  (gitlab/gerrit/Phab) 1 concurrent / ≥1s delay. **Rate limiting is not
+  enforced on bots running in Toolforge or any other WMCS offering** — they
+  are explicitly exempt, though WMF reserves the right to throttle clients
+  that threaten stability.
+- **[Wikimedia APIs / Rate limits](https://www.mediawiki.org/wiki/Wikimedia_APIs/Rate_limits)** —
+  the cross-API gateway classes (the 10/200/2000-per-min table above).
+  AQS metrics endpoints (`wikimedia.org/api/rest_v1/metrics/...`) are not
+  listed in either document's per-surface tables; the general read guidance
+  applies, WMCS exemption included — no fixed delay inside Toolforge, honor
+  429/`Retry-After` when it appears.
+
+**Specifics from the Robot policy that are easy to miss** (page read 2026-09-17):
+
+- **Dumps first**: "Consider if dumps are more efficient than live requests" —
+  offline collection is preferred where it exists.
+- **Honor robots.txt**, and **default to `Accept-Encoding: gzip`** (unnecessary
+  only for media files, which are already compressed).
+- **Website reads**: crawl canonical `/wiki/Article_name` URLs **with no query
+  parameters**; do **not** emulate a browser (no cookies, no JS) unless under
+  ~5 req/s; **< 10 concurrent** and **< 20 req/s average** overall; never use
+  `oldId`/`curid`.
+- **Media (`upload.wikimedia.org`)**: ≤ 2 concurrent total, ≤ 25 Mbps measured
+  over 10-second intervals, and only originals or **standard thumbnail sizes**
+  — prefer thumbnails.
+- **Action API**: avoid expensive endpoints — if a call takes > 1s to serve,
+  wait 5s before the next one; use batch requests where supported.
+- **Non-wiki resources (Gerrit, GitLab, Phabricator)**: concurrency ≤ 1 and
+  ≥ 1s between requests; **pause ≥ 15 minutes after any 5xx**.
+- **Significant volume + no impersonation**: either publish a JSON list of your
+  source CIDRs, or authenticate (OAuth 2.0 preferred; session cookies also
+  supported).
+- **Escalation**: community bots → run in WMCS or authenticate + get a local bot
+  flag; external/commercial high volume → Wikimedia Enterprise APIs; unsure →
+  **bot-traffic@wikimedia.org**. Bots that repeatedly work around the limits, or
+  threaten stability, **may be blocked**. The policy notes it is an evolution of
+  the original 2009 version.
+
+### Caching Strategy (Prevents Redundant Calls)
+
+When fetching the same set of pages across multiple runs (e.g., re-running
+a tool with different parameters), a simple disk cache avoids redundant
+HTTP requests and reduces rate-limit pressure.
+
+**Recommended pattern — JSON key-value cache:**
+
+```python
+import json, os
+
+CACHE_FILE = ".api_cache.json"
+_cache = {}
+
+if os.path.exists(CACHE_FILE):
+    with open(CACHE_FILE) as f:
+        _cache = json.load(f)
+
+def fetch_with_cache(lang, title):
+    key = f"{lang}:{title}"
+    if key in _cache:
+        return _cache[key]
+    url = f"https://{lang}.wikipedia.org/api/rest_v1/page/summary/{title}"
+    resp = requests.get(url, headers=HEADERS, timeout=15)
+    if resp.status_code == 200:
+        data = resp.json()
+        result = data.get("extract", "")
+        _cache[key] = result
+        with open(CACHE_FILE, "w") as f:
+            json.dump(_cache, f)
+        return result
+    return None
+```
+
+**Key points:**
+- Use `{lang}:{title}` as the cache key to avoid collisions
+- Write back to disk after each fetch (appending is fine for ~300 entries)
+- Keep cache files gitignored (they're session artifacts)
+- For large caches (>1000 entries), consider SQLite instead of JSON
+
+#### Cache the entity, not the batch (verified 2026-10-04)
+
+If you cache a **batched** response under a key derived from the request URL,
+the **batch composition is part of the cache key**. Any change to batch size,
+ordering or membership silently invalidates every entry:
+
+```
+GET w/api.php?action=query&titles=A|B|C&prop=templates   → key = hash(full URL)
+GET w/api.php?action=query&titles=A|B|C|D&prop=templates → different key, nothing reused
+```
+
+Observed in a real tool that censuses peer articles in `titles=` batches:
+
+- Changing batches from 50 titles to 25 — a pure performance tweak — turned a
+  warm sub-second evaluation into a **~2,600-request cold crawl**, which then
+  hit a 429 (see *Sustained rate, not burst size* above). A caching regression
+  surfaces as a **rate-limit** error.
+- A cold cache also destroys your baseline: results and timings stop being
+  comparable, so a miss is indistinguishable from a regression.
+
+**Pattern: keep the URL cache, add an entity-keyed layer on top.**
+
+```python
+def read_entity(cache_dir, kind, key):        # kind="templates", key=<page title>
+    path = os.path.join(cache_dir, kind, sha1(key) + ".json")
+    return json.load(open(path)) if os.path.exists(path) else None
+
+def write_entity(cache_dir, kind, key, value):
+    os.makedirs(os.path.join(cache_dir, kind), exist_ok=True)
+    tmp = f"{cache_dir}/{kind}/{sha1(key)}.json.tmp"
+    with open(tmp, "w") as fh:
+        json.dump(value, fh)
+    os.replace(tmp, f"{cache_dir}/{kind}/{sha1(key)}.json")
+```
+
+Fetch batched (that is what the API rewards), then **split each response into
+per-entity entries**. Overlapping workloads gain twice over: two runs sharing
+60% of their inputs fetch only the missing 40%.
+
+**Do not pay for a cache refactor with a crawl — migrate what you already
+have.** The batched responses on disk contain every per-entity answer:
+
+```python
+for body in cached_bodies():                       # existing URL-keyed files
+    for page in body.get("query", {}).get("pages", []):
+        write_entity(CACHE, "templates", page["title"],
+                     {"templates": page.get("templates", []), "page": page})
+```
+
+A one-off harvest turned 8,159 cached batch bodies into 11,670 entity entries
+with **zero network requests**, so the "cold" re-warm never happened. One
+correctness guard: when an old and a new entry both exist, **keep the richer
+one** — a response truncated by a per-request row budget can otherwise overwrite
+a complete entry with a starved one.
+
+### Structured Error Returns from Fetch Functions
+
+When a fetch fails, return a **dict with `lead` and `error` fields** rather
+than a bare `None`. This lets callers distinguish between different failure
+modes without making additional API calls:
+
+```python
+def fetch_lead(lang, title) -> dict:
+    """Returns {"lead": str|None, "error": str|None}."""
+    url = f"https://{lang}.wikipedia.org/api/rest_v1/page/summary/{title}"
+    resp = requests.get(url, timeout=15)
+    if resp.status_code == 200:
+        data = resp.json()
+        extract = data.get("extract", "")
+        if extract and extract.strip():
+            return {"lead": extract, "error": None}
+        # HTTP 200 but empty extract — investigate why
+        page_type = data.get("type", "")
+        if page_type == "disambiguation":
+            return {"lead": None, "error": "Disambiguation page (no lead text)"}
+        if data.get("description"):
+            return {"lead": None, "error": f"Has description but no extract; type={page_type}"}
+        return {"lead": None, "error": f"No content; type={page_type}"}
+    return {"lead": None, "error": f"HTTP {resp.status_code}"}
+```
+
+This pattern lets consumers show actionable error messages:
+```
+❌  scn    Has description but no extract; type=standard
+❌  mhr    No content; type=standard
+❌  nb     HTTP 500
+```
+
+### Common Causes of 429 Responses
+
+- **Too many requests in a short window** even with a proper User-Agent.
+  Stay under ~2 requests/second for batch operations, and add deliberate
+  delays (0.3–0.5s) between requests.
+- **Too many titles in a single `titles` parameter.** Keep batches under 50
+  titles per call for `prop=pageprops` and 50 IDs per call for `wbgetentities`.
+- **Fetching very large pages via `action=parse` without a section limit.**
+  Add `rvsection=0` or `section=0` if you only need the lead section, or
+  use `exintro` with `prop=extracts` for a concise summary.
+
+### ⚠️ Login Username Quirk: Spaces → Underscores
+
+The MediaWiki `action=login` API requires the **internal database form** of
+usernames, where spaces are stored as underscores (`_`). The `lgname` parameter
+will fail silently (returning `"Unknown error"`) if you pass a username with
+literal spaces, even though that's how the username displays on wiki pages and in
+the `Special:BotPasswords` confirmation message.
+
+**Always normalize** usernames before passing them to `lgname`:
+
+```python
+# ✗ This will FAIL with "Unknown error"
+lgname = "AL Wiki MIT"
+
+# ✓ This works
+lgname = "AL_Wiki_MIT"
+```
+
+If you're using bot passwords, the same rule applies:
+
+```python
+# ✗ Fails
+lgname = "AL Wiki MIT@mybot"
+
+# ✓ Works
+lgname = "AL_Wiki_MIT@mybot"
+```
+
+**Note:** `action=login` also requires **POST**, not GET. See the
+[MediaWiki API documentation](https://www.mediawiki.org/wiki/API:Login) for
+the full login flow (including the two-step `NeedToken` case).
+
+> 🛡️ **Critical: always verify login succeeded.** A login failure (wrong password,
+> expired token, network issue) returns `NeedToken` rather than raising an error.
+> If you proceed without checking, you'll get an anonymous CSRF token (`+\`) and
+> your edits will be attributed to a temporary account (`~2026-XXXXX-XX`) instead
+> of your bot. Always:
+> 1. Assert `login_resp["login"]["result"] == "Success"`
+> 2. Verify `userinfo` matches the expected username
+> 3. Use `assert="user"` on every write request
+>
+> See the **[wikimedia-auth-oauth](../wikimedia-auth-oauth/SKILL.md)** skill for
+> the full canonical login function with all guardrails built in, and the
+> **[pywikibot](../pywikibot/SKILL.md)** skill's Troubleshooting section for
+> bot password authentication.
+
+## **Example Use Cases**
+
+- **Fetch article content:** "Get the wikitext for 'Python (programming language)' using the Action API."
+- **Search:** "Search English Wikipedia for articles about 'machine learning' and return the top 10 titles."
+- **Get page metadata:** "Using the REST API, get the description and thumbnail for 'Albert Einstein'."
+- **SPARQL query:** "Query Wikidata for all museums in Paris with their coordinates."
+- **Batch lookup:** "For each page in this list of 50 titles, fetch the page ID and word count from the API."
+- **Troubleshoot 403:** "Check the User-Agent header and confirm it follows the Wikimedia format."
+
+### REST API `/page/summary` Response Details
+
+The `/{lang}.wikipedia.org/api/rest_v1/page/summary/{title}` endpoint returns a JSON response with several useful fields beyond `extract` and `thumbnail`:
+
+```json
+{
+  "type": "standard",                // ← page type: "standard" or "disambiguation"
+  "title": "Albert Einstein",
+  "displaytitle": "Albert Einstein",
+  "extract": "Albert Einstein was a German-born...",  // ← lead paragraph (may be empty for DAB pages)
+  "description": "German-born theoretical physicist",
+  "pageid": 736,
+  "content_urls": {
+    "desktop": {"page": "https://en.wikipedia.org/wiki/Albert_Einstein"},
+    "mobile": {"page": "https://en.m.wikipedia.org/wiki/Albert_Einstein"}
+  }
+}
+```
+
+**Key notes:**
+
+- **Mobile domains deprecated (Oct 2025):** Wikimedia unified mobile and desktop domains. `en.m.wikipedia.org` no longer serves content — it redirects to `en.wikipedia.org`. Do not construct `https://{lang}.m.wikipedia.org/` URLs in new code. The `content_urls.mobile.page` field returned by the REST API still exists but redirects to the desktop domain. See [Unifying mobile and desktop domains](https://diff.wikimedia.org/2025/11/21/unifying-mobile-and-desktop-domains/).
+
+  **To request mobile-formatted content, use one of:**
+  - **URL parameter:** `https://en.wikipedia.org/wiki/Chess?useformat=mobile` (recommended — works on all page views)
+  - **index.php:** `https://en.wikipedia.org/w/index.php?title=Chess&mobileformat=1` (legacy, being phased out)
+  - **Action API parse:** `action=parse&page=Chess&mobileformat=1` or the newer `action=parse&page=Chess&prop=text&useformat=mobile`
+  - **REST API:** `/page/mobile-html/{title}` returns mobile-optimized HTML (stable, not deprecated)
+- **`type` field:** Use `type == "disambiguation"` to detect disambiguation pages without parsing templates or categories (more reliable than checking for `{{disambiguation}}` templates).
+- **`extract` may be empty** even when the page exists. Disambiguation pages and pages consisting only of an infobox return an empty string for `extract` but still return HTTP 200.
+- **Unicode control characters:** Some language editions include bare Unicode formatting characters (e.g., U+200E LEFT-TO-RIGHT MARK) in the `extract` text. These are not removed by `.strip()` — filter them with `''.join(c for c in text if c.isprintable())` before processing.
+- **The `type` field is only available in the REST API**, not in the Action API's `prop=extracts`. If you use the Action API, you'd need to check categories or templates instead.
+
+### Embedding wiki pages (iframes)
+
+Wikimedia pages can be embedded in `<iframe>` elements — they send **no
+`X-Frame-Options` and no CSP `frame-ancestors`** (verified 2026-08-13 on
+en.wikipedia.org, en.m.wikipedia.org, and commons.wikimedia.org; this has
+held since the m.-domain unification). This enables direct page embeds:
+`<iframe src="https://en.wikipedia.org/wiki/Chess" referrerpolicy="no-referrer">`.
+The mobile view works the same way with `?useformat=mobile` (see above —
+query param goes before any `#fragment`). The framed page is a trusted
+Wikimedia page (no sandbox needed) and links browse inside the iframe.
+
+- **Fallback if Wikimedia ever adds `frame-ancestors`:** fetch
+  `action=parse&page=Title&prop=text&format=json&formatversion=2&origin=*`
+  (CORS `*`, verified) and inject the HTML into a sandboxed `srcdoc` iframe.
+  Parse output has **no `<script>` tags** (verified) and inlines
+  TemplateStyles, but lacks the base skin CSS — pages render unstyled-ish
+  unless you inject a `load.php` stylesheet link.
+- **Prefer the REST route for scraped/embedded content:** `/page/mobile-html/{title}`
+  returns standalone mobile-optimized HTML (stable endpoint, not deprecated).
+
+This skill includes helper scripts, reference docs, and templates:
+
+### 🔧 Connectivity Test (`scripts/test-api.sh`)
+
+Tests 14 endpoints across 6 API families with your User-Agent and reports which ones work.
+
+```bash
+# Test with the default User-Agent
+./scripts/test-api.sh
+
+# Test with YOUR User-Agent
+./scripts/test-api.sh "MyBot/1.0 (https://example.com; me@example.com) MyProject"
+```
+
+Tests 14 endpoints across 6 API families:
+- 📡 Core APIs (Action API: siteinfo, search, page content) — 3 tests
+- 🌐 REST APIs (page summary, mobile-html) — 3 tests
+- 🔗 SPARQL / Wikidata — 2 tests
+- 📊 Pageviews API — 1 test
+- 🖼️  Commons Analytics API — 3 tests (category metrics, top wikis, top edited)
+- 🧠 Lift Wing ML API — 2 tests (POST-based, revert risk + article quality)
+
+**Note on Commons Analytics:** Data is only available for categories on the
+[allow list](https://gitlab.wikimedia.org/repos/data-engineering/airflow-dags/-/blob/main/main/dags/commons/commons_category_allow_list.tsv)
+and their subcategories. The `category-metrics-snapshot` and `top-wikis-per-category`
+tests use `Smithsonian_American_Art_Museum` (an allow-listed category) and should
+return data. See `references/endpoints.md` for details on the allow list.
+
+### 📚 API Endpoint Reference (`references/endpoints.md`)
+
+Full catalog of Wikimedia endpoints organized by API family:
+- Action API parameters and pagination pattern
+- REST API and RESTBase endpoints
+- Pageviews API parameters and date formats
+- SPARQL query patterns
+- Quick selection guide (task → best endpoint)
+
+Read it when you need to find the right endpoint:
+
+```bash
+# Load by asking the agent, or reference directly
+cat references/endpoints.md
+```
+
+### 🐍 Python Client Template (`assets/user-agent-template.py`)
+
+A ready-to-use Python client with:
+- Proper User-Agent configuration
+- `requests.Session` with connection reuse
+- Rate limiting (configurable delay between requests)
+- Automatic retry with exponential backoff on 429/timeouts
+- Helpful error messages for 403 (bad UA) and 404
+- Convenience methods for all major API types
+- Works as a standalone demo script
+
+```bash
+# Copy and customize
+cp assets/user-agent-template.py my_bot.py
+# Edit my_bot.py with your User-Agent, then run
+python3 my_bot.py
+```
+
+Supports:
+```python
+from user_agent_template import WikimediaClient
+
+with WikimediaClient("MyBot/1.0 (user@example.com) MyProject") as client:
+    # Action API
+    results = client.search("Albert Einstein", limit=5)
+    extract = client.get_page_extract("Python (programming language)")
+    
+    # REST API
+    summary = client.page_summary("Albert Einstein")
+    
+    # SPARQL
+    entities = client.sparql_query("SELECT ?item WHERE { ... }")
+    entity = client.get_entity("Q937")
+    
+    # Pageviews
+    top = client.top_pageviews("en.wikipedia")
+```
+
+---
+
+## CORS: Browser Applications and Cross-Origin Requests
+
+When building **browser-based applications** (JavaScript, not server-side Python), you may encounter CORS (Cross-Origin Resource Sharing) restrictions. This section explains when this happens and how to handle it.
+
+### ⚠️ Browser Fetches: NEVER Set `User-Agent` (the Firefox/Safari preflight trap)
+
+The UA policy above (**"always send a descriptive User-Agent"**) applies to
+**scripts and server-side code** — curl, Python, Node on a server. It **cannot
+and must not be applied to browser `fetch()` calls**:
+
+- `User-Agent` is a **forbidden header name** in browsers. Chromium strips it
+  *before* the CORS preflight check, so a fetch with it set stays a "simple
+  request" and works — **masking the bug during Chrome-only testing**.
+- **Firefox and WebKit (Safari) include it in the CORS preflight check**: the
+  browser sends an `OPTIONS` request with `Access-Control-Request-Headers:
+  user-agent`, and Wikimedia's REST endpoints reject it:
+  - RESTBase (`*.wikipedia.org/api/rest_v1/`, `wikimedia.org/api/rest_v1/`):
+    preflight allow-list is `api-user-agent` only — `user-agent` is not in it.
+  - The **Commons Impact Metrics service** (`wikimedia.org/api/rest_v1/metrics/
+    commons-analytics/*`) returns **HTTP 405 for every OPTIONS request**.
+  - The MediaWiki **Action API** (`/w/api.php`) answers preflights properly —
+    which produces the confusing split where some widgets work and others fail
+    with `NetworkError` (Firefox) / `Load failed` (Safari) in the same page load.
+
+**Verified 2026-09-03** (WikiBento, Playwright Firefox + WebKit against
+production; 60 CORS console errors, fixed by a one-line change).
+
+**Rules:**
+
+1. **Browser fetches: send NO custom headers** when possible. A header-free GET
+   is a *simple request* — no preflight, works in every engine. The browser
+   sends its own User-Agent anyway; a custom one is silently ignored by
+   Chromium and *harmful* in Firefox/WebKit.
+2. **Identification lives server-side**: proxies/relays on your own backend
+   should send the descriptive policy-compliant User-Agent (see the proxy
+   pattern below).
+3. `Api-User-Agent` **is** in RESTBase's preflight allow-list (the documented
+   browser identification header) — but setting ANY non-simple header forces a
+   preflight on every request, and some endpoints (CIM) 405 all OPTIONS. Only
+   use it if preflight-safe endpoints are *all* you call.
+
+**Diagnostics:** in Firefox, the console shows `Cross-Origin Request Blocked:
+... header 'user-agent' is not allowed according to header
+'Access-Control-Allow-Headers' from CORS preflight response` — a preflight
+failure, even though `curl -H "Origin: …" <url>` shows `200` with
+`access-control-allow-origin: *` (the GET is fine; the **OPTIONS** is not).
+Test the preflight directly:
+
+```bash
+curl -s -D - -o /dev/null -X OPTIONS \
+  -H "Origin: https://your-app.example" \
+  -H "Access-Control-Request-Method: GET" \
+  -H "Access-Control-Request-Headers: user-agent" \
+  "https://en.wikipedia.org/api/rest_v1/page/summary/Ada_Lovelace"
+```
+
+A 405, or a 200 whose `access-control-allow-headers` omits `user-agent`, means
+browser fetches with that header will fail in Firefox/Safari.
+
+### When CORS Becomes an Issue
+
+Most Wikimedia APIs (Action API, REST API, SPARQL) **do send CORS headers** and work fine from browser JavaScript. However, **media files served from `upload.wikimedia.org` do not** — and this is where you'll encounter CORS errors.
+
+| Resource | CORS Headers? | Browser Access |
+|----------|:-------------:|----------------|
+| Action API (`/w/api.php`) | Yes | Works from any origin |
+| REST API (`/api/rest_v1/`) | Yes (GET; ⚠ preflight rejects `user-agent`) | Simple requests only — see the preflight trap below |
+| SPARQL (`query.wikidata.org/sparql`) | Yes | Works from any origin |
+| **Media files** (`upload.wikimedia.org`) | **No** | **Blocked for Canvas/WebGL/`background-image`** |
+| File page redirects (`Special:FilePath/`) | Yes | Works for `<img>` display |
+
+### The Problem: `upload.wikimedia.org` Has No CORS Headers
+
+```
+Access to image at 'https://upload.wikimedia.org/wikipedia/commons/thumb/...'
+from origin 'http://localhost:3000' has been blocked by CORS policy:
+No 'Access-Control-Allow-Origin' header is present on the requested resource.
+```
+
+Chrome DevTools shows: `net::ERR_BLOCKED_BY_ORB` (Opaque Response Blocking).
+
+This affects:
+- **Canvas pixel access** (`canvas.getContext('2d').getImageData()`)
+- **WebGL textures** (`texImage2D`)
+- **CSS `background-image`** in some browsers
+- **Audio/video elements** for certain operations
+
+### Solution: Proxy Through Your Server
+
+For browser apps that need full access to media content, **proxy the request through your own server**:
+
+```
+Browser -> Your Server -> Commons API -> Your Server -> Browser
+         (same-origin)   (no CORS)     (same-origin)
+```
+
+The browser sees the response as **same-origin**, so CORS restrictions don't apply.
+
+**Server-side pattern (Node.js):**
+
+```javascript
+// API endpoint: /api/media?url=...
+app.get('/api/media', async (req, res) => {
+  const mediaUrl = req.query.url;
+  const resp = await fetch(mediaUrl);
+  const buffer = await resp.arrayBuffer();
+  
+  // Cache with SHA-256 hash filename
+  const hash = createHash('sha256').update(buffer).digest('hex');
+  const cachedPath = `cache/${hash}.jpg`;
+  await writeFile(cachedPath, buffer);
+  
+  res.json({ url: `/cache/${hash}.jpg` });
+});
+```
+
+**Client-side usage:**
+
+```javascript
+// Direct Commons URL - CORS blocked
+const directUrl = 'https://upload.wikimedia.org/wikipedia/commons/thumb/...';
+
+// Proxied URL - same-origin, no CORS issues
+const proxiedUrl = '/cache/abc123.jpg';
+document.getElementById('img').src = proxiedUrl;  // Works!
+```
+
+### When You Don't Need a Proxy
+
+- **Server-side code** (Python, Node.js) — no CORS restrictions, fetch directly
+- **Simple `<img>` display** — use `Special:FilePath/` redirect URLs
+- **Metadata-only APIs** — Action API, REST API, SPARQL all work from browsers
+
+### Related Documentation
+
+For detailed thumbnail/media CORS handling, see **[wikimedia-commons-thumbnails](../wikimedia-commons-thumbnails/SKILL.md)** Section 10.
+
+---
+
+## Cross-References
+
+| Related Skill | Why |
+|--------------|-----|
+| **[wikimedia-api-strategy](../wikimedia-api-strategy/SKILL.md)** | Decision framework for choosing the right API |
+| **[wikimedia-auth-oauth](../wikimedia-auth-oauth/SKILL.md)** | OAuth 1.0a/2.0 and bot passwords for authenticated requests |
+| **[wikipedia-error-handling](../wikipedia-error-handling/SKILL.md)** | Retry strategies and backoff patterns for 403/429/5xx responses |
+| **[wikimedia-commons-thumbnails](../wikimedia-commons-thumbnails/SKILL.md)** | CORS proxy patterns for serving Commons media in browser apps |
+| **[pywikibot](../pywikibot/SKILL.md)** | Python bot framework with built-in User-Agent and rate limiting |
+
+---

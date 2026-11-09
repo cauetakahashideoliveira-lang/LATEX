@@ -1,0 +1,23 @@
+# LaTeX: auxiliares de compilação (o PDF final é versionado)
+*.aux
+*.bbl
+*.bcf
+*.blg
+*.fdb_latexmk
+*.fls
+*.lof
+*.log
+*.lot
+*.out
+*.run.xml
+*.synctex.gz
+*.toc
+*.xdv
+_minted*/
+
+# graphify: caches locais (graph.json e GRAPH_REPORT.md podem ser versionados)
+graphify-out/cache/
+graphify-out/.graphify_*
+
+# Python
+__pycache__/

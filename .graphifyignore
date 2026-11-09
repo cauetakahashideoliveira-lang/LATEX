@@ -1,0 +1,13 @@
+# Saídas de compilação (duplicariam o .tex no grafo)
+*.aux
+*.log
+*.bbl
+*.bcf
+*.blg
+*.fls
+*.fdb_latexmk
+*.run.xml
+*.synctex.gz
+*.out
+*.toc
+teste-configuracao/

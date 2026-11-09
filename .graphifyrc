@@ -1,0 +1,6 @@
+# LaTeX como texto (extração semântica), não como código.
+# Sem isto o graphify ignora .tex/.bib e lê .cls como Apex.
+language.tex=markdown
+language.bib=markdown
+language.cls=markdown
+language.sty=markdown

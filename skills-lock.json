@@ -1,0 +1,54 @@
+{
+  "version": 1,
+  "skills": {
+    "citation-management": {
+      "source": "k-dense-ai/scientific-agent-skills",
+      "sourceType": "github",
+      "skillPath": "skills/citation-management/SKILL.md",
+      "computedHash": "3470992cd0c3aac99e74b9e162a875a8e41febbcc138f8f4d5f721be041319e7",
+      "installMode": "copy"
+    },
+    "find-skills": {
+      "source": "vercel-labs/skills",
+      "sourceType": "github",
+      "skillPath": "skills/find-skills/SKILL.md",
+      "computedHash": "913b9d37d0d54047dd65222bb8c67b2bf04e3cb87dcad1729068d7a8b2c8c396",
+      "installMode": "copy"
+    },
+    "latex": {
+      "source": "vekzz-dev/opencode-skills",
+      "sourceType": "github",
+      "skillPath": "skills/latex/SKILL.md",
+      "computedHash": "bd11bc8c6f4d9d669228aeb6bf40a3a627e081bf15e72ac41963c86d1a45fe49",
+      "installMode": "copy"
+    },
+    "pdf2tex": {
+      "source": "calix-l/awesome-latex-skills",
+      "sourceType": "github",
+      "skillPath": "pdf2tex/SKILL.md",
+      "computedHash": "fd788277dc4fe6671bad3dab55490bd95837817ca2cd8ea3aca0171895894b4f",
+      "installMode": "copy"
+    },
+    "tikz-diagrams": {
+      "source": "patrick-healy/tikz-diagrams-skill",
+      "sourceType": "github",
+      "skillPath": "skills/tikz-diagrams/SKILL.md",
+      "computedHash": "cb4a9b4b37de07e30f8e65904a779ef570e193531f95f58c6e5ddd12a143ea64",
+      "installMode": "copy"
+    },
+    "wikimedia-api-access": {
+      "source": "fuzheado/wikipedia-ai-skills",
+      "sourceType": "github",
+      "skillPath": ".claude/skills/wikimedia-api-access/SKILL.md",
+      "computedHash": "43a7923ef259a5a9f7d039a100e16bf87af99e36e549485c2ec2b2d399869994",
+      "installMode": "copy"
+    },
+    "wikimedia-commons": {
+      "source": "fuzheado/wikipedia-ai-skills",
+      "sourceType": "github",
+      "skillPath": ".claude/skills/wikimedia-commons/SKILL.md",
+      "computedHash": "1f1b96901063df81e8f611cba5002266893a532c26c5e39d2e0f29afa480b03e",
+      "installMode": "copy"
+    }
+  }
+}
