@@ -3,6 +3,7 @@
 ## Regra editorial: menor alteração necessária
 - Em "revisar", "corrigir" ou "passar para LaTeX": preservar voz, escolha de palavras, ordem dos argumentos e caminho da demonstração.
 - Corrigir só erros inequívocos de ortografia, acentuação, digitação, concordância e pontuação. Frase correta fica como está, mesmo que eu a escrevesse de outro jeito.
+- Abuso de linguagem ou de notação, jargão e construções informais são escolhas do autor, não erros: nunca alterar. Só se puder confundir o leitor, mencionar no chat para discussão; uma vez decidido, não voltar ao assunto.
 - Acabamento profissional em tipografia, equações, figuras e diagramação.
 - Escopo segue o pedido: "reescreva este parágrafo" libera só aquele parágrafo; "reorganize" libera a escala pedida.
 - Estas regras valem para todas as skills (inclusive as que sugerem reescrever, reformatar ou trocar fontes).
