@@ -32,12 +32,13 @@
 - Superfícies e 3D: Asymptote (`asy`, `settings.render=0` para saída vetorial). Dados numéricos: matplotlib com backend `pgf` e `lualatex` (mesmas fontes). SVG: `pdftocairo -svg`.
 - Imagens externas: só com fonte original, autor e licença verificados. Registrar em `figuras/CREDITOS.md` (arquivo, URL de origem, autor, licença e URL da licença, alterações) e creditar na legenda. Busca: Openverse API (sem chave) e Wikimedia Commons (`extmetadata`); User-Agent `LATEX-writing-env/1.0 (https://github.com/cauetakahashideoliveira-lang/LATEX)`.
 
-## Contas e lógica
-- Contas de uma passagem (derivadas, integrais, somas, simplificações): conferir com SymPy (skill `sympy`) antes de dizer que estão certas ou erradas. Numérico: `mpmath`/`scipy`.
-- Desigualdades e afirmações universais simples: Z3 (`z3-solver`) prova ou devolve contraexemplo.
-- Demonstração delicada ou pedido de conferência: só o verificador adversarial da skill `math-olympiad` (contexto limpo, padrões de falha). Não resolver, não reescrever, não usar o passo de apresentação.
-- Dizer o que foi verificado e como; ferramenta confirma contas, não o raciocínio.
-- Verificação formal (quando pedida ou para um lema crítico): Lean 4.35 + Mathlib em `verificacao-lean/` (skill `writing-lean-proofs`). Sessão nova: `bash verificacao-lean/instalar.sh`. Prova aceita só com `lake build` limpo e `#print axioms` restrito a `propext`, `Classical.choice`, `Quot.sound` (sem `sorryAx`). Mostrar ao autor o enunciado formalizado: o Lean garante esse enunciado, não a fidelidade da tradução.
+## Contas e lógica (só quando o autor pedir)
+- O artigo é autoral. Verificação não altera texto nem argumento, e as ferramentas abaixo só rodam a pedido ("confere essa conta", "verifica essa demonstração", "formaliza esse lema").
+- Na revisão comum, dúvida percebida vira uma nota curta no chat (trecho + dúvida), sem rodar ferramenta e sem propor reescrita.
+- Contas: SymPy (skill `sympy`); numérico: `mpmath`/`scipy`. Desigualdades e afirmações universais simples: Z3 (`z3-solver`).
+- Demonstração: só o verificador adversarial da skill `math-olympiad`. Não resolver, não reescrever, não usar o passo de apresentação.
+- Formal: Lean 4.35 + Mathlib em `verificacao-lean/` (skill `writing-lean-proofs`; sessão nova: `bash verificacao-lean/instalar.sh`). Aceitar só com `lake build` limpo e `#print axioms` restrito a `propext`, `Classical.choice`, `Quot.sound`. Mostrar o enunciado formalizado: o Lean garante esse enunciado, não a fidelidade da tradução.
+- Dizer o que foi verificado e como.
 
 ## Referências
 - Skill `citation-management`: DOI → BibTeX (Crossref/doi.org); conferir com a fonte; proteger maiúsculas (`{Euler}`), matemática em `$...$`, páginas com `--`.
