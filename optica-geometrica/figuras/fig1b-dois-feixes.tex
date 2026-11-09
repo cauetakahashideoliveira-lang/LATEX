@@ -1,0 +1,27 @@
+% Figura 1b: as duas regras usuais para o espelho côncavo.
+% Vértice V na origem; R = 4, C = (-R, 0), F = (-R/2, 0). Objeto em p = 6.
+\begin{tikzpicture}[font=\small]
+  \coordinate (C) at (-4,0);
+  \coordinate (F) at (-2,0);
+  \draw[eixo] (-6.6,0) -- (0.6,0);
+  \draw[espelho] (C) ++(-22:4) arc[start angle=-22,end angle=22,radius=4];
+  \foreach \a in {-20,-17.5,...,20}
+    \draw[hachura] (C) ++(\a:4) -- ++(\a-40:0.18);
+  % objeto e imagem (p' = 3, altura -0,4)
+  \draw[line width=1.1pt,-{Stealth[length=3.5pt,width=2.8pt]}] (-6,0) -- (-6,0.8);
+  \draw[line width=1.1pt,black!50,-{Stealth[length=3.5pt,width=2.8pt]}] (-3,0) -- (-3,-0.4);
+  % (1) chega paralelo -> passa pelo foco
+  \draw[raio,vermelho] (-6,0.8) -- (-0.081,0.8);
+  \draw[raio,vermelho] (-0.081,0.8) -- (-3.705,-0.711);
+  % (2) passa pelo foco -> sai paralelo
+  \draw[raio,azul] (-6,0.8) -- (-0.02,-0.4);
+  \draw[raio,azul] (-0.02,-0.4) -- (-3.705,-0.4);
+  \fill (C) circle (0.053) (F) circle (0.053);
+  \node[below=1pt] at (C) {$C$};
+  \node[below=1pt] at (F) {$F$};
+  \node[anchor=north west,inner sep=1pt] at (0.12,-0.12) {$V$};
+  \node[anchor=base,font=\scriptsize,text=vermelho] at (-3.17,1.025)
+    {(1) chega paralelo $\to$ passa pelo foco};
+  \node[anchor=base,font=\scriptsize,text=azul] at (-2.98,-1.297)
+    {(2) passa pelo foco $\to$ sai paralelo};
+\end{tikzpicture}

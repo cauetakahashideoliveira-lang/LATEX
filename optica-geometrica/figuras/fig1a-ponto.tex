@@ -1,0 +1,13 @@
+% Figura 1a: um ponto do objeto emite feixes em todas as direções.
+\begin{tikzpicture}[font=\small]
+  \foreach \a in {0,15,...,345}
+    \draw[line width=0.9pt,laranja!85!black,postaction={decorate},
+      decoration={markings,mark=at position 0.74 with {\arrow{>}}}]
+      (0,0) -- (\a:1.55);
+  \foreach \a in {7.5,22.5,...,352.5}
+    \draw[line width=0.4pt,laranja!60,postaction={decorate},
+      decoration={markings,mark=at position 0.8 with {\arrow{>}}}]
+      (0,0) -- (\a:1.2);
+  \pic at (0,0) {brilho};
+  \node[anchor=base] at (0,-2.0) {um ponto do objeto};
+\end{tikzpicture}

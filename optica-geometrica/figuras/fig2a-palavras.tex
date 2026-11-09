@@ -1,0 +1,15 @@
+% Figura 2a: as mesmas palavras em outra ordem.
+\begin{tikzpicture}[font=\small,
+    palavra/.style={draw=#1,fill=#1!12,line width=0.7pt,rounded corners=2.5pt,
+      minimum width=1.1cm,minimum height=0.6cm,inner sep=1pt,font=\sffamily\small}]
+  \node[inner sep=0pt,anchor=base east] at (2.75,1.577) {Pessoa 1:};
+  \node[inner sep=0pt,anchor=base east] at (2.75,0.627) {Pessoa 2:};
+  \foreach \w/\c [count=\i from 0] in {{Olá,}/azul,tudo/laranja,bem/verde,com/rosa,você?/vermelhao}
+    \node[palavra=\c] at (3.657+1.275*\i,1.698) {\w};
+  \foreach \w/\c [count=\i from 0] in {Bem/verde,você?/vermelhao,{Com,}/rosa,olá/azul,tudo/laranja}
+    \node[palavra=\c] at (3.657+1.275*\i,0.748) {\w};
+  \node[inner sep=0pt,anchor=base west,text=verde!70!black] at (9.953,1.61)
+    {$\checkmark$ entendemos a mensagem};
+  \node[inner sep=0pt,anchor=base west,text=vermelhao!80!black] at (9.953,0.661)
+    {$\times$ interpretação prejudicada};
+\end{tikzpicture}

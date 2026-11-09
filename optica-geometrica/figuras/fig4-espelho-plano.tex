@@ -1,0 +1,21 @@
+% Figura 4: imagem virtual no espelho plano (A' simétrico de A).
+\begin{tikzpicture}[font=\small]
+  \fill[black!7] (6.613,-1.558) rectangle (6.833,2.442);
+  \draw[espelho] (6.613,-1.558) -- (6.613,2.442);
+  \foreach \y in {-1.458,-1.208,...,2.3}
+    \draw[hachura] (6.613,\y) -- ++(0.2,0.12);
+  \foreach \yp/\yo/\c in {0.242/-0.358/azul,0.042/-0.678/verde,-0.158/-0.998/vermelhao} {
+    \draw[raio,\c] (3.613,1.242) -- (6.613,\yp);
+    \draw[raio,\c] (6.613,\yp) -- (4.813,\yo);
+    \draw[line width=0.6pt,dashed,\c] (6.613,\yp) -- (9.613,1.242);
+  }
+  \pic at (3.613,1.242) {brilho};
+  \draw[line width=0.6pt,fill=white] (9.613,1.242) circle (0.077);
+  \node[anchor=base] at (6.615,2.695) {espelho plano};
+  \node[above left=0pt] at (3.613,1.242) {$A$};
+  \node[above left=0pt] at (9.613,1.242) {$A'$};
+  \draw[anteparo] (10.013,0.492) rectangle (10.153,1.992);
+  \node[inner sep=0pt,anchor=base west,align=left,text=black!85] at (10.448,0.743)
+    {anteparo:\\nenhuma luz\\chega aqui};
+  \pic[xscale=-1,scale=0.957] at (4.473,-0.678) {olho};
+\end{tikzpicture}

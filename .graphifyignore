@@ -13,3 +13,6 @@
 teste-configuracao/
 .lake/
 verificacao-lean/
+# PDFs compilados e originais (o grafo usa os .tex)
+*/main.pdf
+*/fonte/

@@ -1,0 +1,410 @@
+% Uma Discussão sobre Óptica Geométrica — Cauê Takahashi de Oliveira
+% Fonte reconstruída a partir do PDF original (fonte/optica-geometrica-original.pdf).
+% Compilação: latexmk main.tex   (pdfLaTeX, como o original)
+\documentclass[11pt,a4paper]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage[brazilian]{babel}
+\usepackage[hmargin=2.7cm,vmargin=2.5cm]{geometry}
+\usepackage{amsmath,amssymb,mathtools}
+\usepackage{microtype}
+\usepackage{csquotes}
+\usepackage{enumitem}
+\usepackage{xcolor}
+\usepackage{graphicx}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage[most]{tcolorbox}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,decorations.markings,calc}
+
+% ---------------------------------------------------------------- notação
+\DeclareMathOperator{\tg}{tg}
+
+% ---------------------------------------------------------------- cores
+% Raios: paleta Okabe–Ito (distinguível por daltônicos).
+\definecolor{azul}{HTML}{0072B2}
+\definecolor{laranja}{HTML}{E69F00}
+\definecolor{verde}{HTML}{009E73}
+\definecolor{rosa}{HTML}{CC79A7}
+\definecolor{vermelhao}{HTML}{D55E00}
+\definecolor{vermelho}{HTML}{C0392B}
+\definecolor{corespelho}{HTML}{3E4C66}
+\definecolor{caixafundo}{HTML}{F6F8FA}
+\definecolor{caixabarra}{HTML}{6283A1}
+\definecolor{caixatitulo}{HTML}{1F4E79}
+
+% ---------------------------------------------------------------- legendas
+\captionsetup{font=small,labelfont={sf,bf},labelsep=period,margin=0.5cm}
+\captionsetup[sub]{font=small,labelfont={rm,bf},labelsep=space,margin=0pt}
+
+% ---------------------------------------------------------------- caixas
+\newtcolorbox{comentario}{enhanced,breakable,sharp corners,boxrule=0pt,
+  frame hidden,colback=caixafundo,borderline west={2.2pt}{0pt}{caixabarra},
+  left=10pt,right=10pt,top=5pt,bottom=6pt,before skip=13.15pt,after skip=9.7pt,
+  fontupper=\small}
+\newcommand{\titulocaixa}[1]{{\sffamily\bfseries\color{caixatitulo}#1}}
+\setlist[itemize]{topsep=2pt,itemsep=5pt,parsep=0pt}
+\setlength{\parskip}{0.45em}
+
+% ---------------------------------------------------------------- TikZ
+\pgfdeclareradialshading{brilho}{\pgfpoint{0bp}{0bp}}{color(0bp)=(white);
+  color(14bp)=(white); color(34bp)=(laranja!55); color(50bp)=(white)}
+\tikzset{
+  >={Stealth[length=6.2pt,width=5.1pt]},
+  % raio de luz com seta no meio do segmento
+  raio/.style={line width=0.9pt,postaction={decorate},
+    decoration={markings,mark=at position 0.5 with {\arrow{>}}}},
+  eixo/.style={line width=0.4pt,black!50},
+  espelho/.style={line width=1.6pt,corespelho},
+  hachura/.style={line width=0.4pt,corespelho!60},
+  ponto/.style={circle,fill,inner sep=0pt,minimum size=3pt},
+  cota/.style={line width=0.5pt,shorten <=1pt,shorten >=1pt,
+    {Latex[length=3.3pt,width=2.5pt]}-{Latex[length=3.3pt,width=2.5pt]}},
+  guia/.style={line width=0.4pt,black!50,dotted},
+  anteparo/.style={line width=0.6pt,black!65,dashed,fill=black!4},
+  % brilho em torno de uma fonte pontual
+  brilho/.pic={\shade[shading=brilho] (0,0) circle (0.21); \fill (0,0) circle (0.06);},
+  % olho voltado para a esquerda (use xscale=-1 para a direita)
+  olho/.pic={
+    \draw[line width=0.6pt,fill=white] (0,0) circle (0.345);
+    \draw[line width=0.6pt,fill=white] (150:0.345) arc[start angle=131,end angle=229,radius=0.224];
+    \fill[azul!70!black] (-0.316,0) ellipse[x radius=0.034,y radius=0.138];
+    \draw[line width=0.4pt,fill=black!8] (-0.219,0) ellipse[x radius=0.052,y radius=0.121];
+    \draw[line width=0.6pt] (0.345,0) -- (0.483,0);},
+}
+
+\usepackage[hidelinks,pdftitle={Uma Discussão sobre Óptica Geométrica},
+  pdfauthor={Cauê Takahashi de Oliveira}]{hyperref}
+
+\title{\textbf{Uma Discussão sobre Óptica Geométrica}\\[11pt]
+  {\large\itshape Um pequeno trabalho}}
+\author{Cauê Takahashi de Oliveira}
+\date{Novembro de 2026}
+
+\begin{document}
+\maketitle
+\thispagestyle{empty}
+
+Este é um trabalho autoral, em que vamos discutir de onde vêm as regras que
+aprendemos para espelhos e lentes. Em vez de aceitar essas regras como prontas,
+vamos entender o que significa, fisicamente, formar uma imagem, por que dizemos
+que ela se forma no cruzamento de feixes luminosos e por que o estudo dos
+espelhos côncavos usa apenas alguns feixes convenientes. A partir disso,
+demonstraremos que todo feixe que chega paralelo ao eixo cruza o mesmo ponto, a
+uma distância $R/2$ do vértice, o que dá origem ao conceito de foco, e seguiremos
+rumo à equação de Gauss.
+
+Nesta seção vamos compreender e demonstrar o porquê de as fórmulas de óptica
+fazerem sentido e o que de fato os modelos teóricos dizem sobre a realidade.
+
+\medskip
+\noindent\textbf{1º)} O problema do estudo da óptica começa cedo: é normal que
+alunos compreendam bem os princípios da luz, reflexões e espelhos planos, mas,
+ao estudar lentes e espelhos côncavos, se percam completamente, sem que consigam
+estabelecer uma conexão direta entre os fundamentos estudados e essa nova
+frente, parecendo até que algumas regras foram inventadas.
+
+\medskip
+\noindent\textbf{2º)} A primeira objeção surge logo no início, onde é jogado o
+fato de que no cruzamento de raios luminosos uma imagem é formada. A lógica por
+trás, por incrível que pareça, é bem simples. Ninguém discorda ou duvida que o
+fenômeno da visão ocorre quando feixes de luz provenientes de um objeto,
+carregando informações, atravessam nosso olho e são interpretados pelo nosso
+cérebro. Nesse ponto, ainda é óbvio para todos que um corpo emite infinitos
+feixes de luz (Figura~\ref{fig:ponto}). Entretanto, ao estudar espelhos
+côncavos, utilizam-se apenas dois feixes, os quais ainda por cima seguem regras
+estranhas: \enquote{o feixe que chega paralelo passa pelo foco}
+(Figura~\ref{fig:dois-feixes}). Por quê?
+
+\begin{figure}[htbp]
+  \centering
+  \begin{subfigure}[b]{0.3\textwidth}
+    \centering
+    \input{figuras/fig1a-ponto}
+    \caption{}\label{fig:ponto}
+  \end{subfigure}%
+  \hfill
+  \begin{subfigure}[b]{0.66\textwidth}
+    \centering
+    \input{figuras/fig1b-dois-feixes}
+    \caption{}\label{fig:dois-feixes}
+  \end{subfigure}
+  \caption{(a) Cada ponto de um corpo emite infinitos feixes de luz, em todas as
+    direções. (b) No estudo dos espelhos côncavos, porém, costumam-se usar apenas
+    dois feixes, com regras como \enquote{o feixe que chega paralelo passa pelo
+    foco} (1) e \enquote{o feixe que passa pelo foco sai paralelo} (2).
+    $C$: centro de curvatura; $F$: foco; $V$: vértice.}
+  \label{fig:raios}
+\end{figure}
+
+\medskip
+\noindent\textbf{3º)} Veja bem, antes de discutirmos e mostrarmos o porquê,
+vamos entender o que significa formar uma imagem. O que acontece de fato é que a
+informação que a luz carrega, embora não seja perdida, é rearranjada por um
+aparato refletor. Instantaneamente, o rearranjo gerado impede que nós
+interpretemos o objeto. Suponha o seguinte exemplo: duas pessoas chegam em você
+e dizem: \enquote{Olá, tudo bem com você?} e a outra: \enquote{Bem você? Com,
+olá tudo}. Note que, embora o conjunto de palavras seja o mesmo e cada palavra
+carregue a sua mesma informação própria, ainda assim sua interpretação foi
+prejudicada, apenas rearranjando informação (Figura~\ref{fig:palavras}).
+Analogamente, cada feixe de luz carrega uma informação única e, ao
+interpretarmos esse conjunto de dados na ordem imposta pela emissão do objeto,
+interpretamos ele (Figura~\ref{fig:feixes-ordem}).
+
+A ideia de formar uma imagem surge fundamentalmente desse conceito; veja como
+tudo se encaixa: a luz sai de um objeto, a luz reflete em um espelho côncavo e
+cada feixe de luz tem sua trajetória redefinida. Se eles saírem de um ponto, por
+exemplo, essa emissão pontual ordenada configura nossa interpretação do objeto e
+nossa distância dele. É óbvio que, caso a luz que foi espalhada seja
+reconfigurada novamente de forma que todos os feixes luminosos saiam na mesma
+configuração de emissão inicial, nesse caso um ponto, voltaríamos a interpretar
+aquele conjunto de informação da mesma maneira que o objeto. Por isso, dizer que
+a imagem se forma no encontro de feixes luminosos não significa que magicamente
+naquele ponto se formará um holograma do objeto, e sim que, ao se cruzarem,
+assumem a mesma configuração da informação emitida pelo corpo inicialmente e,
+portanto, caso um anteparo seja colocado lá, a projeção vista seria interpretada
+da mesma maneira que interpretamos o objeto (Figura~\ref{fig:imagem-real}).
+Denominamos esse fenômeno de formação de imagem. Note que nem sempre será
+possível colocar um anteparo no local em que a imagem se forma, e isso não muda o
+fato de que a imagem se formará lá (Figura~\ref{fig:espelho-plano}).
+
+\begin{figure}[htbp]
+  \centering
+  \begin{subfigure}{\textwidth}
+    \centering
+    \input{figuras/fig2a-palavras}
+    \caption{Mesmas palavras, cada uma com a sua informação; só a ordem mudou.}
+    \label{fig:palavras}
+  \end{subfigure}
+
+  \bigskip
+  \begin{subfigure}{\textwidth}
+    \centering
+    \input{figuras/fig2b-feixes}
+    \caption{O mesmo vale para os feixes de luz.}
+    \label{fig:feixes-ordem}
+  \end{subfigure}
+  \caption{A analogia das palavras. As cores indicam a informação que cada
+    palavra (ou cada feixe) carrega. Em (a), as duas frases têm exatamente as
+    mesmas palavras, mas só a primeira é interpretada. Em (b), na ordem imposta
+    pela emissão, o olho interpreta os feixes como vindos de um ponto; os mesmos
+    feixes, rearranjados por uma superfície irregular, chegam fora de ordem e o
+    ponto não é reconhecido.}
+  \label{fig:analogia}
+\end{figure}
+
+\begin{figure}[htbp]
+  \centering
+  \input{figuras/fig3-imagem-real}
+  \caption{Os feixes que saem do ponto $A$ têm sua trajetória redefinida pelo
+    espelho côncavo e voltam a se encontrar em $A'$, onde assumem de novo a
+    configuração de uma emissão pontual (as cores mostram que nenhuma informação
+    se perde). Um anteparo colocado em $A'$ mostraria um ponto luminoso; sem o
+    anteparo, os feixes seguem e chegam ao olho como se tivessem sido emitidos
+    em $A'$.}
+  \label{fig:imagem-real}
+\end{figure}
+
+\begin{figure}[htbp]
+  \centering
+  \input{figuras/fig4-espelho-plano}
+  \caption{Nem sempre é possível colocar um anteparo onde a imagem se forma. No
+    espelho plano, os feixes refletidos chegam ao olho como se saíssem de $A'$,
+    atrás do espelho (prolongamentos tracejados): a imagem se forma lá, mas um
+    anteparo em $A'$ não receberia luz alguma.}
+  \label{fig:espelho-plano}
+\end{figure}
+
+\clearpage
+\section*{Demonstrando certas propriedades e a equação de Gauss}
+
+\begin{itemize}[label=$\ast$,leftmargin=17pt,labelsep=6pt,topsep=4pt]
+  \item Na vida real, um espelho côncavo possui grau de abertura, no geral,
+    menor ou igual a $10^\circ$; logo, a altura do vértice do espelho até seu
+    topo é muito menor que o raio (Figura~\ref{fig:abertura}).
+\end{itemize}
+
+\begin{figure}[htbp]
+  \centering
+  \input{figuras/fig5-abertura}
+  \caption{Abertura de um espelho côncavo real, desenhada em escala. Com
+    $\varphi \le 10^\circ$, a altura $H$ do vértice até o topo do espelho não
+    passa de cerca de 17\% do raio $R$, e o espelho é quase plano perto do
+    vértice.}
+  \label{fig:abertura}
+\end{figure}
+
+Queremos resolver o seguinte problema: dadas as dimensões de um espelho côncavo
+e a posição de um corpo, onde se formará sua imagem? Isto é, para um corpo
+puntiforme, o ponto de convergência de todos os seus feixes. Note que, como a
+luz se propaga em linha reta, dois feixes podem se intersectar em somente um
+ponto e, assumindo que todos os feixes devem se cruzar neste ponto, basta
+equacionar o cruzamento de dois feixes distintos e poderemos afirmar que no
+ponto em que eles se cruzarem todos os feixes deverão se cruzar. Assim, cabe a
+nós escolhermos feixes convenientes para equacionar
+(Figura~\ref{fig:demonstracao}).
+
+\begin{figure}[htbp]
+  \centering
+  \input{figuras/fig6-demonstracao}
+  \caption{Redesenho da figura da demonstração (dimensões exageradas). O centro
+    $C$ do espelho está na origem. O ponto $O$ emite um feixe paralelo ao eixo,
+    que atinge o espelho em $P$ e é refletido como o feixe $\delta$; onde
+    $\delta$ cruza o eixo das abscissas é justamente o que vamos calcular. Um
+    segundo feixe, de $O$ até o vértice $V$, reflete-se simetricamente em relação
+    ao eixo (ângulos $\alpha$). $r$: reta tangente ao espelho em $P$; $n$: reta
+    normal; $H$: altura do espelho.}
+  \label{fig:demonstracao}
+\end{figure}
+
+\noindent\textbf{i)} Primeiro calcula-se onde o raio paralelo deve cruzar o eixo
+das abscissas. Para isso, devemos equacionar a reta normal, para achar $\theta$;
+depois de fazermos isso, equacionamos o feixe $\delta$ e descobrimos o ponto de
+cruzamento.
+
+\begin{comentario}
+  \titulocaixa{Comentário}\quad O feixe que sai de $O$ paralelo ao eixo atinge o
+  espelho no ponto $P$, à mesma altura $h$. A reta normal $n$ ao espelho em $P$
+  passa pelo centro $C$ (o raio de uma circunferência é sempre perpendicular a
+  ela), e a reta tangente $r$ é perpendicular a $n$. Como o feixe incidente é
+  paralelo ao eixo $x$, o ângulo de incidência em $P$ (entre o feixe e a normal)
+  é igual ao ângulo $\theta$ que a normal faz com o eixo em $C$ (ângulos
+  alternos internos). Pela lei da reflexão, o feixe refletido $\delta$ faz o
+  mesmo ângulo $\theta$ do outro lado da normal; por isso, $\delta$ faz com o
+  eixo $x$ um ângulo $2\theta$. Conhecer $\theta$ é, portanto, o primeiro passo
+  para equacionar $\delta$.
+\end{comentario}
+
+Equação da circunferência (centro $C$ na origem e raio $R$):
+\begin{equation}\label{eq:circ}
+  x^2 + y^2 = R^2 \quad\Longrightarrow\quad 2x + 2y\frac{dy}{dx} = 0
+  \quad\Longrightarrow\quad \frac{dy}{dx} = -\frac{x}{y}.
+\end{equation}
+Como $r \perp n$:
+\begin{equation}\label{eq:normal}
+  m = -\left(\frac{dy}{dx}\right)^{-1} \quad\Longrightarrow\quad m = \frac{y}{x}.
+\end{equation}
+Para $y = h$ (e, para o espelho, escolhe-se o sinal $+$):
+\begin{equation}\label{eq:xP}
+  x^2 + h^2 = R^2 \quad\Longrightarrow\quad x = \pm\sqrt{R^2 - h^2}
+  \quad\Longrightarrow\quad x_P = \sqrt{R^2 - h^2}.
+\end{equation}
+Logo,
+\begin{equation}\label{eq:m}
+  m = \frac{h}{\sqrt{R^2 - h^2}} = \frac{1}{\sqrt{\dfrac{R^2}{h^2} - 1}} = \tg\theta.
+\end{equation}
+Como $h \ll R \Rightarrow \dfrac{R}{h} \gg 1$, logo
+\begin{equation}\label{eq:aprox}
+  m \approx \frac{1}{\sqrt{\dfrac{R^2}{h^2}}} = \frac{h}{R}
+  \qquad\Longrightarrow\qquad \tg\theta \approx \frac{h}{R}.
+\end{equation}
+
+\begin{comentario}
+  \titulocaixa{Explicando as passagens}
+  \begin{itemize}[leftmargin=12pt,labelsep=6pt]
+    \item Em \eqref{eq:circ}, derivamos os dois lados da equação em relação a
+      $x$, tratando $y$ como função de $x$ (derivação implícita): pela regra da
+      cadeia, $\frac{d}{dx}(y^2) = 2y\frac{dy}{dx}$, e a derivada de $R^2$, que é
+      constante, é zero. O resultado $\frac{dy}{dx}$ é a inclinação da reta
+      tangente $r$ no ponto $(x, y)$ do espelho.
+    \item Em \eqref{eq:normal}, usamos que duas retas perpendiculares têm
+      inclinações cujo produto é $-1$. Repare que $m = y/x$ é exatamente a
+      inclinação da reta que liga a origem $C$ ao ponto $(x, y)$: a conta
+      confirma que a normal passa pelo centro do espelho.
+    \item Em \eqref{eq:xP}, a reta $y = h$ corta a circunferência em dois pontos;
+      o espelho está do lado positivo do eixo $x$, por isso fica a raiz positiva
+      e $P = (x_P, h)$.
+    \item Em \eqref{eq:m}, a inclinação de uma reta é a tangente do ângulo que
+      ela faz com o eixo $x$; como a normal faz o ângulo $\theta$ com o eixo,
+      $m = \tg\theta$. A segunda forma vem de dividir numerador e denominador
+      por $h$.
+    \item Em \eqref{eq:aprox}, como $R/h \gg 1$, o termo $-1$ dentro da raiz é
+      desprezível diante de $R^2/h^2$. Por exemplo, para $h = 0{,}1\,R$: o valor
+      exato é $\tg\theta = 1/\sqrt{99} \approx 0{,}1005$ e a aproximação dá
+      $h/R = 0{,}1000$, um erro de apenas 0,5\%.
+  \end{itemize}
+\end{comentario}
+
+Como $m = \tg\theta \approx \dfrac{h}{R}$:
+\begin{equation}\label{eq:tg2}
+  \tg 2\theta = \frac{2m}{1 - m^2} = \frac{2h}{R}\cdot\frac{1}{1 - \dfrac{h^2}{R^2}}
+  \quad\Longrightarrow\quad \tg 2\theta = \frac{2hR}{R^2 - h^2},
+\end{equation}
+logo o feixe $\delta$: $y - \tg 2\theta\, x - b = 0$. Assim,
+\begin{equation}\label{eq:b}
+  b = h - \tg 2\theta\,\sqrt{R^2 - h^2}.
+\end{equation}
+Logo,
+\begin{equation}\label{eq:delta}
+  \delta:\quad y - \tg 2\theta\, x - h + \tg 2\theta\,\sqrt{R^2 - h^2} = 0.
+\end{equation}
+Tomando $y = 0 \Rightarrow x = x_0$ ($x$ associado ao cruzamento do eixo $x$):
+\begin{align}
+  0 - \tg 2\theta\, x_0 - h + \tg 2\theta\,\sqrt{R^2 - h^2} = 0
+  \quad&\Longrightarrow\quad x_0 = \sqrt{R^2 - h^2} - \frac{h}{\tg 2\theta}
+  \label{eq:x0}\\
+  &\Longrightarrow\quad x_0 = \sqrt{R^2 - h^2} - \frac{h\,(R^2 - h^2)}{2hR}
+  \label{eq:x0b}\\
+  &\Longrightarrow\quad x_0 = \sqrt{R^2 - h^2} - \frac{R}{2} + \frac{h^2}{2R}.
+  \notag
+\end{align}
+Dividindo por $R$:
+\begin{equation}\label{eq:x0R}
+  \frac{x_0}{R} = \sqrt{1 - \frac{h^2}{R^2}} - \frac{1}{2}
+  + \frac{1}{2}\left(\frac{h}{R}\right)^{2}, \qquad \text{com}\ \frac{h}{R} \to 0.
+\end{equation}
+Logo,
+\begin{equation}\label{eq:foco}
+  \frac{x_0}{R} = 1 - \frac{1}{2} = \frac{1}{2}
+  \quad\Longrightarrow\quad \boxed{x_0 = \frac{R}{2}}
+\end{equation}
+
+\begin{comentario}
+  \titulocaixa{Explicando as passagens}
+  \begin{itemize}[leftmargin=12pt,labelsep=6pt]
+    \item Em \eqref{eq:tg2}, usamos a fórmula da tangente do arco duplo,
+      $\tg 2\theta = \dfrac{2\tg\theta}{1 - \tg^2\theta}$, com
+      $\tg\theta = m \approx h/R$; depois multiplicamos numerador e denominador
+      por $R^2$.
+    \item Em \eqref{eq:b} e \eqref{eq:delta}, o feixe $\delta$ é uma reta de
+      coeficiente angular $\tg 2\theta$ (ela faz o ângulo $2\theta$ com o eixo)
+      que passa por $P = \bigl(\sqrt{R^2 - h^2},\, h\bigr)$; substituindo as
+      coordenadas de $P$ na equação da reta, encontramos o coeficiente linear
+      $b$.
+    \item Em \eqref{eq:x0}, o cruzamento com o eixo das abscissas é o ponto da
+      reta onde $y = 0$; basta isolar $x_0$.
+    \item Em \eqref{eq:x0b}, como $\dfrac{1}{\tg 2\theta} = \dfrac{R^2 - h^2}{2hR}$,
+      o $h$ se cancela e sobra $\dfrac{R^2 - h^2}{2R} = \dfrac{R}{2} - \dfrac{h^2}{2R}$.
+    \item Em \eqref{eq:x0R} e \eqref{eq:foco}, como $h \ll R$, a razão $h/R$ é
+      praticamente zero: a raiz vai para 1 e o termo $\frac{1}{2}(h/R)^2$
+      desaparece. O resultado \emph{não depende de $h$}: qualquer feixe que chega
+      paralelo ao eixo (perto dele) cruza o eixo no mesmo ponto, a uma distância
+      $R/2$ do centro $C$ e, como $V = (R, 0)$, também a $R/2$ do vértice.
+  \end{itemize}
+\end{comentario}
+
+A partir disso, como sabemos que o feixe que chega paralelo sempre vai cruzar o
+eixo em $x_0 = R/2$, damos um nome para esse ponto, por ele ser tão importante:
+chamamos de \textbf{foco} ($F$), e a distância $f = R/2$ do foco ao vértice, de
+distância focal (Figura~\ref{fig:foco}).
+
+\begin{figure}[htbp]
+  \centering
+  \input{figuras/fig7-foco}
+  \caption{Feixes que chegam paralelos ao eixo, em alturas diferentes, são
+    refletidos pelo espelho e cruzam o eixo no mesmo ponto, a $R/2$ do centro e
+    do vértice: esse ponto é o foco $F$. (Os feixes mais afastados do eixo cruzam
+    um pouco antes, porque para eles $h \ll R$ vale menos; por isso os espelhos
+    reais têm abertura pequena.)}
+  \label{fig:foco}
+\end{figure}
+
+\bigskip
+\begin{center}
+  \small\itshape (continua)
+\end{center}
+
+\end{document}

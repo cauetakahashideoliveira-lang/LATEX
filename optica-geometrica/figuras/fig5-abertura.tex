@@ -1,0 +1,22 @@
+% Figura 5: abertura real (em escala). C na origem, R = 6,5 cm, abertura 10°.
+\begin{tikzpicture}[font=\small]
+  \def\R{6.5}
+  \draw[eixo] (-0.4,0) -- (7.6,0);
+  \draw[line width=0.5pt,black!30,dashed] (10:\R) arc[start angle=10,end angle=17,radius=\R];
+  \draw[line width=0.5pt,black!30,dashed] (-10:\R) arc[start angle=-10,end angle=-17,radius=\R];
+  \draw[espelho] (-10:\R) arc[start angle=-10,end angle=10,radius=\R];
+  \foreach \a in {-9,-7.5,...,9}
+    \draw[hachura] (\a:\R) -- ++(\a-40:0.18);
+  \draw[line width=0.6pt] (0,0) -- (10:\R);
+  \draw[line width=0.4pt] (0:2.2) arc[start angle=0,end angle=10,radius=2.2];
+  \node[anchor=base] at (3.044,0.678) {$R$};
+  \node[inner sep=0pt,anchor=base west] at (2.34,0.173) {$\varphi$};
+  \draw[guia] (10:\R) -- (7.35,{\R*sin(10)});
+  \draw[cota] (7.2,0) -- (7.2,{\R*sin(10)});
+  \node[inner sep=0pt,anchor=base west] at (7.337,0.444) {$H$};
+  \fill (0,0) circle (0.053);
+  \node[anchor=base] at (-0.0,-0.435) {$C$};
+  \node[inner sep=0pt,anchor=base west] at (6.656,-0.395) {$V$};
+  \node[anchor=base] at (3.055,-0.988)
+    {$\varphi \le 10^\circ \implies H = R\sin\varphi \lesssim 0{,}17\,R$};
+\end{tikzpicture}

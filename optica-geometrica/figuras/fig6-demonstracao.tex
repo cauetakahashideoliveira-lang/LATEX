@@ -1,0 +1,66 @@
+% Figura 6: a figura da demonstração (dimensões exageradas).
+% C na origem; R = 6,48; O = (R - p, h) com h = 1,729 e p = 4,536.
+% sin(theta) = h/R; o feixe delta faz o ângulo 2*theta com o eixo;
+% o feixe O -> V reflete-se com o mesmo ângulo alpha, tg(alpha) = h/p.
+\begin{tikzpicture}[font=\small]
+  \def\R{6.48}
+  \def\h{1.729}
+  \def\p{4.536}
+  \pgfmathsetmacro{\th}{asin(\h/\R)}
+  \pgfmathsetmacro{\al}{atan(\h/\p)}
+  \pgfmathsetmacro{\xP}{sqrt(\R*\R-\h*\h)}
+  \coordinate (C) at (0,0);
+  \coordinate (O) at ({\R-\p},\h);
+  \coordinate (P) at (\xP,\h);
+  \coordinate (V) at (\R,0);
+  % eixos
+  \draw[line width=0.5pt,-{Stealth[length=4pt,width=3pt]}] (-2.916,0) -- (10.235,0);
+  \draw[line width=0.5pt,-{Stealth[length=4pt,width=3pt]}] (0,-3.996) -- (0,4.403);
+  \node[inner sep=0pt,anchor=base west] at (9.922,-0.288) {$x$};
+  \node[inner sep=0pt,anchor=base west] at (-0.322,4.14) {$y$};
+  % espelho e altura H
+  \draw[espelho] (-34:\R) arc[start angle=-34,end angle=34,radius=\R];
+  \foreach \a in {-32.5,-30,...,32.5}
+    \draw[hachura] (\a:\R) -- ++(\a-40:0.215);
+  \draw[guia] (34:\R) -- (9.774,{\R*sin(34)});
+  \draw[cota] (9.612,0) -- (9.612,{\R*sin(34)});
+  \node[inner sep=0pt,anchor=base west] at (9.749,1.692) {$H$};
+  % normal n (passa por C) e tangente r em P
+  \draw[line width=0.6pt,black!65,dashed] (C) -- (\th:8.037);
+  \node[inner sep=0pt,anchor=base west] at (7.885,2.37) {$n$ (normal)};
+  \draw[line width=0.6pt,black!65] ($(P)+(\th-90:1.296)$) -- ($(P)+(\th+90:1.296)$);
+  \node[inner sep=0pt,anchor=base west] at (6.041,2.89) {$r$ (tangente)};
+  \draw[line width=0.4pt] ($(P)+(\th+90:0.22)$) -- ++(\th+180:0.22) -- ++(\th-90:0.22);
+  % cotas p e R
+  \draw[line width=0.5pt,dashed] (O) -- (O|-C);
+  \draw[guia] (O|-C) -- ++(0,-0.777);
+  \draw[guia] (V) -- ++(0,-1.533);
+  \draw[cota] ({\R-\p},-0.594) -- (\R,-0.594)
+    node[midway,fill=white,inner sep=1.5pt] {$p$};
+  \draw[cota] (0,-1.35) -- (\R,-1.35) node[midway,fill=white,inner sep=1.5pt] {$R$};
+  % feixe paralelo e feixe refletido delta
+  \draw[raio,vermelho] (O) -- (P);
+  \draw[raio,vermelho] (P) -- ++(180+2*\th:2.086) coordinate (D);
+  \draw[line width=0.8pt,vermelho,densely dotted] (D) -- ++(180+2*\th:0.773);
+  \node[inner sep=0pt,anchor=base west,text=vermelho,font=\normalsize\bfseries] at (3.397,0.179) {?};
+  \node[inner sep=0pt,anchor=base west,text=vermelho] at (5.6,0.722) {$\delta$};
+  % feixe O -> V e seu reflexo
+  \draw[raio,azul] (O) -- (V);
+  \draw[raio,azul] (V) -- ++(180+\al:4.123);
+  % ângulos
+  \draw[line width=0.4pt] (1,0) arc[start angle=0,end angle=\th,radius=1];
+  \node[inner sep=0pt,anchor=base west] at (1.181,0.05) {$\theta$};
+  \draw[line width=0.4pt] ($(P)+(180:1.202)$) arc[start angle=180,end angle=180+\th,radius=1.202];
+  \node[inner sep=0pt,anchor=base west] at ($(P)+(-1.576,-0.325)$) {$\theta$};
+  \draw[line width=0.4pt] ($(P)+(180+\th:1.5)$) arc[start angle=180+\th,end angle=180+2*\th,radius=1.5];
+  \node[inner sep=0pt,anchor=base west] at ($(P)+(-1.716,-0.82)$) {$\theta$};
+  \draw[line width=0.4pt,azul] ($(V)+(180-\al:1.301)$) arc[start angle=180-\al,end angle=180+\al,radius=1.301];
+  \node[inner sep=0pt,anchor=base west,text=azul] at ($(V)+(-1.674,0.211)$) {$\alpha$};
+  \node[inner sep=0pt,anchor=base west,text=azul] at ($(V)+(-1.674,-0.362)$) {$\alpha$};
+  % pontos e rótulos
+  \fill (O) circle (0.07) (P) circle (0.07) (V) circle (0.07);
+  \node[inner sep=0pt,anchor=base west] at (0.974,2.029) {$O\ (R-p,\ h)$};
+  \node[inner sep=0pt,anchor=base west] at (6.727,1.468) {$P = (x_P,\ h)$};
+  \node[inner sep=0pt,anchor=base west] at (6.681,-0.442) {$V = (R,\ 0)$};
+  \node[inner sep=0pt,anchor=base west] at (-0.412,-0.375) {$C$};
+\end{tikzpicture}

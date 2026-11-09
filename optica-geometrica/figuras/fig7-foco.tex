@@ -1,0 +1,30 @@
+% Figura 7: feixes paralelos e o foco. C na origem, R = 6, F = (R/2, 0).
+% Reflexão exata: o feixe na altura h cruza o eixo em x = R/(2 cos theta),
+% sin(theta) = h/R; perto do eixo isso tende a R/2.
+\begin{tikzpicture}[font=\small]
+  \def\R{6}
+  \coordinate (C) at (0,0);
+  \coordinate (F) at (\R/2,0);
+  \coordinate (V) at (\R,0);
+  \draw[eixo] (-0.4,0) -- (6.6,0);
+  \draw[espelho] (-26:\R) arc[start angle=-26,end angle=26,radius=\R];
+  \foreach \a in {-25.5,-23,...,24.5}
+    \draw[hachura] (\a:\R) -- ++(\a-40:0.18);
+  \foreach \h/\c in {1.8/azul,1.2/laranja,0.6/verde,-0.6/rosa,-1.2/vermelhao,-1.8/vermelho} {
+    \pgfmathsetmacro{\th}{asin(\h/\R)}
+    \pgfmathsetmacro{\xM}{sqrt(\R*\R-\h*\h)}
+    \pgfmathsetmacro{\xX}{\R/(2*cos(\th))}
+    \coordinate (M) at (\xM,\h);
+    \coordinate (X) at (\xX,0);
+    \draw[raio,\c] (0.4,\h) -- (M);
+    \draw[raio,\c] (M) -- ($(M)!1.45!(X)$);
+  }
+  \fill (C) circle (0.053);
+  \fill (F) circle (0.07);
+  \node[fill=white,inner sep=1pt] at (3.0,0.282) {$F$};
+  \node[inner sep=0pt,anchor=base west] at (-0.411,-0.396) {$C$};
+  \node[inner sep=0pt,anchor=base west] at (6.156,-0.396) {$V$};
+  \foreach \x in {0,3,6} \draw[guia] (\x,0) -- (\x,-3.1);
+  \draw[cota] (0,-2.95) -- (3,-2.95) node[midway,fill=white,inner sep=1.5pt] {$R/2$};
+  \draw[cota] (3,-2.95) -- (6,-2.95) node[midway,fill=white,inner sep=1.5pt] {$f = R/2$};
+\end{tikzpicture}

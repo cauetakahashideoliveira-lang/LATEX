@@ -1,0 +1,29 @@
+% Figura 2b: os mesmos feixes, na ordem da emissão e rearranjados.
+\begin{tikzpicture}[font=\small]
+  % à esquerda: na ordem da emissão
+  \foreach \dy/\c in {0.3/azul,0.15/laranja,0/verde,-0.15/rosa,-0.3/vermelhao}
+    \draw[raio,\c] (2.162,2.181) -- (5.412,2.181+\dy);
+  \pic at (2.162,2.181) {brilho};
+  \pic at (5.782,2.181) {olho};
+  \node[anchor=base,align=center] at (4.021,0.634)
+    {na ordem da emissão:\\o olho interpreta um ponto};
+  % à direita: rearranjados por um refletor irregular
+  \fill[black!9] (8.762,1.431) -- (9.012,1.541) -- (9.362,1.371) -- (9.612,1.561)
+    -- (9.862,1.391) -- (10.112,1.541) -- (10.362,1.351) -- (10.612,1.521)
+    -- (10.862,1.381) -- (11.112,1.551) -- (11.362,1.371) -- (11.612,1.511)
+    -- (11.862,1.431) -- (11.862,1.131) -- (8.762,1.131) -- cycle;
+  \draw[line width=1.2pt,corespelho] (8.762,1.431) -- (9.012,1.541) -- (9.362,1.371)
+    -- (9.612,1.561) -- (9.862,1.391) -- (10.112,1.541) -- (10.362,1.351)
+    -- (10.612,1.521) -- (10.862,1.381) -- (11.112,1.551) -- (11.362,1.371)
+    -- (11.612,1.511) -- (11.862,1.431);
+  \foreach \px/\py/\qy/\c in {9.362/1.371/2.751/azul,9.862/1.391/3.051/laranja,
+      10.362/1.351/3.201/verde,10.862/1.381/2.901/rosa,11.362/1.371/3.351/vermelhao} {
+    \draw[raio,\c] (8.562,2.981) -- (\px,\py);
+    \draw[raio,\c] (\px,\py) -- (13.012,\qy);
+  }
+  \pic at (8.562,2.981) {brilho};
+  \pic at (13.382,3.051) {olho};
+  \node[anchor=base west,text=vermelhao!80!black,font=\large\bfseries] at (13.16,3.537) {?};
+  \node[anchor=base,align=center] at (10.821,0.384)
+    {rearranjados por um refletor irregular:\\a mesma informação, fora de ordem};
+\end{tikzpicture}
