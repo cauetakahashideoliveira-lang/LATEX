@@ -1,0 +1,59 @@
+% O número de permutações de n elementos.
+% Compilação: latexmk  (gera O-Numero-de-Permutacoes.pdf)
+\documentclass[a4paper,12pt]{article}
+
+\usepackage{fontspec}
+\usepackage[brazilian]{babel}
+\usepackage[hmargin=2.7cm,vmargin=2.5cm]{geometry}
+\usepackage{amsmath,amssymb,mathtools,amsthm}
+\usepackage{microtype}
+\usepackage{csquotes}
+\usepackage[hidelinks,pdftitle={O número de permutações},
+  pdfauthor={Cauê Takahashi de Oliveira}]{hyperref}
+
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.6em}
+
+\title{O número de permutações de $n$ elementos}
+\author{Cauê Takahashi de Oliveira}
+\date{Novembro de 2026}
+
+\begin{document}
+\maketitle
+\thispagestyle{empty}
+
+Seja $\sigma^{(n)}\colon A_n \to A_n$, $A_n = \{a_1, a_2, \dots, a_n\}$ e $\sigma$
+bijetora;
+\[
+  S_n \coloneqq \bigl\{\sigma^{(n)} \bigm| \sigma^{(n)} \text{ bijetora}\bigr\}.
+\]
+Seja $S_n^{j,i} \subset S_n$,
+\[
+  S_n^{j,i} \coloneqq \bigl\{\sigma \bigm| \sigma(a_j) = a_i;\ j, i \text{ definidos}\bigr\}.
+\]
+É óbvio que
+\[
+  \bigcup_i S_n^{j,i} = S_n, \qquad \forall j \in \{1, 2, \dots, n\}.
+\]
+Por simetria $\bigl|S_n^{j,i}\bigr| = \bigl|S_n^{j',i'}\bigr|$, $\forall\, i, j$.
+
+Seja então
+\[
+  \lambda_{n,n+1} = \bigl\{x = (\sigma^{(n)}, \sigma^{(n+1)}) \bigm|
+    \sigma^{(n)} \cap \sigma^{(n+1)} = \sigma^{(n)}\bigr\}.
+\]
+Note que $x \in \lambda_{n,n+1} \Rightarrow \sigma^{(n+1)}(a_{n+1}) = a_{n+1}$.
+Fixado $\sigma^{(n+1)}(a_{n+1}) = a_{n+1}$,
+\begin{align*}
+  &\Longrightarrow\ \exists!\, \sigma^{(n+1)} \bigm| \sigma^{(n+1)}(k) = \sigma^{(n)}(k),
+    \quad \forall k,\ \sigma^{(n)}\\
+  &\Longrightarrow\ \bigl|\lambda_{n,n+1}\bigr| = |S_n| = \bigl|S_{n+1}^{n+1,i}\bigr|\\
+  &\Longrightarrow\ |S_{n+1}| = \Bigl|\bigcup_i S_{n+1}^{n+1,i}\Bigr|
+    = \sum_i \bigl|S_{n+1}^{n+1,i}\bigr| = (n+1)\cdot|S_n|.
+\end{align*}
+Como $|S_{n+1}| = (n+1)\cdot|S_n|$, por PIF $|S_1| = 1$
+\[
+  \iff |S_2| = 2 \iff \cdots \iff |S_n| = n! \qquad \text{C.Q.D.}
+\]
+
+\end{document}
