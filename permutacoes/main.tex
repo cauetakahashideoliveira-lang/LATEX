@@ -11,6 +11,8 @@
 \usepackage[hidelinks,pdftitle={O número de permutações},
   pdfauthor={Cauê Takahashi de Oliveira}]{hyperref}
 
+\newtheorem*{proposicao}{Proposição}
+
 \setlength{\parindent}{0pt}
 \setlength{\parskip}{0.6em}
 
@@ -22,42 +24,60 @@
 \maketitle
 \thispagestyle{empty}
 
-Seja $\sigma^{(n)}\colon A_n \to A_n$, $A_n = \{a_1, a_2, \dots, a_n\}$ e $\sigma$
-bijetora;
+\begin{proposicao}
+  Seja $A_n = \{a_1, a_2, \dots, a_n\}$ um conjunto com $n \ge 1$ elementos e
+  $S_n$ o conjunto das bijeções de $A_n$ em $A_n$. Então $|S_n| = n!$.
+\end{proposicao}
+
+\textit{Demonstração.}
+Seja $\sigma^{(n)}\colon A_n \to A_n$, $A_n = \{a_1, a_2, \dots, a_n\}$ e
+$\sigma^{(n)}$ bijetora;
 \[
   S_n \coloneqq \bigl\{\sigma^{(n)} \bigm| \sigma^{(n)} \text{ bijetora}\bigr\}.
 \]
 Seja $S_n^{j,i} \subset S_n$,
 \[
-  S_n^{j,i} \coloneqq \bigl\{\sigma \bigm| \sigma(a_j) = a_i;\ j, i \text{ definidos}\bigr\}.
+  S_n^{j,i} \coloneqq \bigl\{\sigma \in S_n \bigm| \sigma(a_j) = a_i\bigr\},
+  \qquad i, j \in \{1, \dots, n\} \text{ fixos}.
 \]
-É óbvio que
+É óbvio que\footnote{Além disso, para $j$ fixo, os conjuntos $S_n^{j,i}$ são
+  disjuntos dois a dois, pois $\sigma(a_j)$ assume um único valor; é isso que
+  permite somar as cardinalidades mais adiante.}
 \[
-  \bigcup_i S_n^{j,i} = S_n, \qquad \forall j \in \{1, 2, \dots, n\}.
+  \bigcup_{i=1}^{n} S_n^{j,i} = S_n, \qquad \forall j \in \{1, \dots, n\}.
 \]
-Por simetria $\bigl|S_n^{j,i}\bigr| = \bigl|S_n^{j',i'}\bigr|$, $\forall\, i, j$.
+Por simetria $\bigl|S_n^{j,i}\bigr| = \bigl|S_n^{j',i'}\bigr|$,
+$\forall\, i, j, i', j' \in \{1, \dots, n\}$.
 
-Seja então
+Seja então\footnote{Aqui $A_{n+1} = A_n \cup \{a_{n+1}\}$. Vendo cada função
+  como o conjunto dos pares $(a, \sigma(a))$, a condição
+  $\sigma^{(n+1)}|_{A_n} = \sigma^{(n)}$ é $\sigma^{(n)} \subset \sigma^{(n+1)}$,
+  ou seja, $\sigma^{(n)} \cap \sigma^{(n+1)} = \sigma^{(n)}$: $\sigma^{(n+1)}$
+  estende $\sigma^{(n)}$.}
 \[
-  \lambda_{n,n+1} = \bigl\{x = (\sigma^{(n)}, \sigma^{(n+1)}) \bigm|
-    \sigma^{(n)} \cap \sigma^{(n+1)} = \sigma^{(n)}\bigr\}.
+  \lambda_{n,n+1} \coloneqq \bigl\{(\sigma^{(n)}, \sigma^{(n+1)}) \in S_n \times S_{n+1}
+    \bigm| \sigma^{(n+1)}|_{A_n} = \sigma^{(n)}\bigr\}.
 \]
-Note que $x \in \lambda_{n,n+1} \Rightarrow \sigma^{(n+1)}(a_{n+1}) = a_{n+1}$.
-Fixado $\sigma^{(n+1)}(a_{n+1}) = a_{n+1}$,
+Note que $(\sigma^{(n)}, \sigma^{(n+1)}) \in \lambda_{n,n+1} \Rightarrow
+\sigma^{(n+1)}(a_{n+1}) = a_{n+1}$. Fixado $\sigma^{(n+1)}(a_{n+1}) = a_{n+1}$,
 \begin{align*}
-  &\Longrightarrow\ \exists!\, \sigma^{(n+1)} \bigm| \sigma^{(n+1)}(k) = \sigma^{(n)}(k),
-    \quad \forall k,\ \sigma^{(n)}
+  &\Longrightarrow\ \forall\, \sigma^{(n)} \in S_n,\ \exists!\, \sigma^{(n+1)} \in S_{n+1}
+    \bigm| \sigma^{(n+1)}(a_k) = \sigma^{(n)}(a_k),\ \ \forall k \in \{1, \dots, n\}.
   \intertext{Reciprocamente, se $\sigma^{(n+1)}(a_{n+1}) = a_{n+1}$, a restrição
     $\sigma^{(n+1)}|_{A_n}$ é bijetora em $A_n$ (pois $\sigma^{(n+1)}$ é injetora e
     $a_{n+1}$ já é imagem de $a_{n+1}$); logo
     $(\sigma^{(n+1)}|_{A_n}, \sigma^{(n+1)}) \in \lambda_{n,n+1}$.}
-  &\Longrightarrow\ \bigl|\lambda_{n,n+1}\bigr| = |S_n| = \bigl|S_{n+1}^{n+1,i}\bigr|\\
-  &\Longrightarrow\ |S_{n+1}| = \Bigl|\bigcup_i S_{n+1}^{n+1,i}\Bigr|
-    = \sum_i \bigl|S_{n+1}^{n+1,i}\bigr| = (n+1)\cdot|S_n|.
+  &\Longrightarrow\ \bigl|\lambda_{n,n+1}\bigr| = |S_n|
+    = \bigl|S_{n+1}^{n+1,n+1}\bigr| = \bigl|S_{n+1}^{n+1,i}\bigr|,
+    \quad \forall i \in \{1, \dots, n+1\}\\
+  &\Longrightarrow\ |S_{n+1}| = \Bigl|\bigcup_{i=1}^{n+1} S_{n+1}^{n+1,i}\Bigr|
+    = \sum_{i=1}^{n+1} \bigl|S_{n+1}^{n+1,i}\bigr| = (n+1)\cdot|S_n|.
 \end{align*}
-Como $|S_{n+1}| = (n+1)\cdot|S_n|$, por PIF $|S_1| = 1$
+Como $|S_1| = 1$ e $|S_{n+1}| = (n+1)\cdot|S_n|$, por
+PIF\footnote{Princípio da Indução Finita. A base vale porque a única função de
+  $\{a_1\}$ em $\{a_1\}$ é a identidade, que é bijetora.}
 \[
-  \iff |S_2| = 2 \iff \cdots \iff |S_n| = n! \qquad \text{C.Q.D.}
+  |S_1| = 1 \iff |S_2| = 2 \iff \cdots \iff |S_n| = n! \qquad \text{C.Q.D.}
 \]
 
 \end{document}
