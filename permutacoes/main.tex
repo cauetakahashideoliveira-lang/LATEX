@@ -46,7 +46,11 @@ Note que $x \in \lambda_{n,n+1} \Rightarrow \sigma^{(n+1)}(a_{n+1}) = a_{n+1}$.
 Fixado $\sigma^{(n+1)}(a_{n+1}) = a_{n+1}$,
 \begin{align*}
   &\Longrightarrow\ \exists!\, \sigma^{(n+1)} \bigm| \sigma^{(n+1)}(k) = \sigma^{(n)}(k),
-    \quad \forall k,\ \sigma^{(n)}\\
+    \quad \forall k,\ \sigma^{(n)}
+  \intertext{Reciprocamente, se $\sigma^{(n+1)}(a_{n+1}) = a_{n+1}$, a restrição
+    $\sigma^{(n+1)}|_{A_n}$ é bijetora em $A_n$ (pois $\sigma^{(n+1)}$ é injetora e
+    $a_{n+1}$ já é imagem de $a_{n+1}$); logo
+    $(\sigma^{(n+1)}|_{A_n}, \sigma^{(n+1)}) \in \lambda_{n,n+1}$.}
   &\Longrightarrow\ \bigl|\lambda_{n,n+1}\bigr| = |S_n| = \bigl|S_{n+1}^{n+1,i}\bigr|\\
   &\Longrightarrow\ |S_{n+1}| = \Bigl|\bigcup_i S_{n+1}^{n+1,i}\Bigr|
     = \sum_i \bigl|S_{n+1}^{n+1,i}\bigr| = (n+1)\cdot|S_n|.
